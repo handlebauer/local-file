@@ -10,14 +10,18 @@ $ npm install @hbauer/local-file
 ```js
 import { LocalFile } from '@hbauer/local-file'
 
+const path = 'src/path/to/data'
 const data = { foo: 'bar' }
 
-const { path } = saveData(JSON.stringify(data)) // save some data somewhere
+const savedFile = await LocalFile.save(path, data)
 
-const file = LocalFile.initialize(path, data)
+assert(savedFile.data === data)
+assert(typeof savedFile.createdAt.date === 'date')
+assert(typeof savedFile.createdAt.milliseconds === 'number')
 
-assert(file.data === data)
-assert(typeof file.createdAt.date === 'date')
-assert(typeof file.createdAt.milliseconds === 'number')
-// etc.
+const loadedFile = await LocalFile.load(path, data) // throws error if the file doesn't exist
+
+assert.deepEqual(savedFile, loadedFile)
+
+// TODO: finish readme
 ```
