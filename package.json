@@ -4,15 +4,15 @@
   "type": "module",
   "exports": {
     ".": {
-      "import": "./lib/index.mjs",
+      "import": "./lib/index.js",
       "require": "./lib/index.cjs"
     },
-    "./utils": {
-      "import": "./lib/utils/index.mjs",
+    "./utils.js": {
+      "import": "./lib/utils/index.js",
       "require": "./lib/utils/index.cjs"
     }
   },
-  "module": "./lib/index.mjs",
+  "module": "./lib/index.js",
   "main": "./lib/index.cjs",
   "types": "types/index.d.ts",
   "files": [
