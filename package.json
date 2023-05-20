@@ -14,6 +14,7 @@
       "require": "./lib/utils/index.cjs"
     }
   },
+  "main": "./lib/index.mjs",
   "files": [
     "lib"
   ],
