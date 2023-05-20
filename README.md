@@ -21,9 +21,9 @@ assert(savedFile.data === data)
 assert(typeof savedFile.createdAt.date === 'date')
 assert(typeof savedFile.createdAt.milliseconds === 'number')
 
-const loadedFile = await LocalFile.load(path, data) // throws error if the file doesn't exist
+const file = await LocalFile.read(path, data) // throws error if the file doesn't exist
 
-assert.deepEqual(savedFile, loadedFile)
+assert.deepEqual(savedFile.data, file.data)
 
 // TODO: finish readme
 ```
