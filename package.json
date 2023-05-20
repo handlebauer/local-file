@@ -4,10 +4,12 @@
   "type": "module",
   "exports": {
     ".": {
+      "types": "./lib/index.d.ts",
       "import": "./lib/index.mjs",
       "require": "./lib/index.cjs"
     },
     "./utils": {
+      "types": "./lib/utils/index.d.ts",
       "import": "./lib/utils/index.mjs",
       "require": "./lib/utils/index.cjs"
     }
