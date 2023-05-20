@@ -14,7 +14,6 @@
   },
   "module": "./lib/index.mjs",
   "main": "./lib/index.cjs",
-  "types": "types/index.d.ts",
   "files": [
     "lib",
     "types"
