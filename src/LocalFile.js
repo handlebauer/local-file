@@ -18,7 +18,7 @@ export class LocalFile {
    * @param {string | Record<string, any>} data
    * @param {LocalFileStats} [stats]
    */
-  static async load(path, data, stats) {
+  static async read(path, data, stats) {
     stats = stats || (await LocalFile.getStats(path))
 
     if (stats === null) {
@@ -43,7 +43,7 @@ export class LocalFile {
      * The file already exists - return it
      */
     if (stats !== null) {
-      return LocalFile.load(path, data, stats)
+      return LocalFile.read(path, data, stats)
     }
 
     if (typeof data === 'string') {
@@ -64,7 +64,7 @@ export class LocalFile {
       await writeToFile(path, seralizedData)
     }
 
-    return LocalFile.load(path, data, stats)
+    return LocalFile.read(path, data, stats)
   }
 
   /**

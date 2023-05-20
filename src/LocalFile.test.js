@@ -27,7 +27,7 @@ test.afterEach('test', async _ => {
 })
 
 test('Should return valid instances with sensible defaults upon initialization', async t => {
-  const jsonFile = await LocalFile.load(pathToJson, json)
+  const jsonFile = await LocalFile.read(pathToJson, json)
 
   t.is(jsonFile.path, pathToJson)
   t.is(jsonFile.data, json)
@@ -35,7 +35,7 @@ test('Should return valid instances with sensible defaults upon initialization',
   t.true(jsonFile.createdAt.date < new Date())
   t.true((await jsonFile.updatedAt).date < new Date())
 
-  const htmlFile = await LocalFile.load(pathToHtml, html)
+  const htmlFile = await LocalFile.read(pathToHtml, html)
 
   t.is(htmlFile.path, pathToHtml)
   t.is(htmlFile.data, html)
@@ -58,7 +58,7 @@ test('Should write an unexisting file to the local filesystem and return a new i
   t.true((await jsonFile.updatedAt).date < new Date())
 })
 
-test('Should load a file and return a new instance upon invoking the `save` method if the already exists', async t => {
+test('Should read a file and return a new instance upon invoking the `save` method if the already exists', async t => {
   const jsonFile = await LocalFile.save(pathToJson, json)
 
   t.is(jsonFile.path, pathToJson)
@@ -69,45 +69,45 @@ test('Should load a file and return a new instance upon invoking the `save` meth
 })
 
 test('Should return valid duration since last update when invoking `sinceUpdated`', async t => {
-  const jsonFile = await LocalFile.load(pathToJson, json)
+  const jsonFile = await LocalFile.read(pathToJson, json)
 
   t.true((await jsonFile.sinceUpdated('milliseconds')) > 1)
   t.true((await jsonFile.sinceUpdated('seconds')) < 10)
 })
 
 test('Should return valid duration since file creation when invoking `sinceCreated`', async t => {
-  const jsonFile = await LocalFile.load(pathToJson, json)
+  const jsonFile = await LocalFile.read(pathToJson, json)
 
   t.true((await jsonFile.sinceCreated('milliseconds')) > 1)
   t.true((await jsonFile.sinceCreated('seconds')) < 10)
 })
 
 test('Should return false upon invoking `olderThan` if the file is newer than the provided duration', async t => {
-  const jsonFile = await LocalFile.load(pathToJson, json)
+  const jsonFile = await LocalFile.read(pathToJson, json)
 
   t.false(await jsonFile.olderThan([99, 'days']))
 })
 
 test('Should return true upon invoking `olderThan` if the file is older than the provided duration', async t => {
-  const jsonFile = await LocalFile.load(pathToJson, json)
+  const jsonFile = await LocalFile.read(pathToJson, json)
 
   t.true(await jsonFile.olderThan([0, 'milliseconds']))
 })
 
 test('Should return false upon invoking `newerThan` if the file is newer than the provided duration', async t => {
-  const jsonFile = await LocalFile.load(pathToJson, json)
+  const jsonFile = await LocalFile.read(pathToJson, json)
 
   t.false(await jsonFile.newerThan([0, 'days']))
 })
 
 test('Should return true upon invoking `newerThan` if the file is older than the provided duration', async t => {
-  const jsonFile = await LocalFile.load(pathToJson, json)
+  const jsonFile = await LocalFile.read(pathToJson, json)
 
   t.true(await jsonFile.newerThan([99, 'days']))
 })
 
 test('Should return serialized JSON upon passing an instance to JSON.stringify', async t => {
-  const jsonFile = await LocalFile.load(pathToJson, json)
+  const jsonFile = await LocalFile.read(pathToJson, json)
 
   const serialized = JSON.stringify(jsonFile)
 
@@ -116,7 +116,7 @@ test('Should return serialized JSON upon passing an instance to JSON.stringify',
 })
 
 test('Should return serialized JSON upon passing a JSON instance to JSON.stringify', async t => {
-  const jsonFile = await LocalFile.load(pathToJson, json)
+  const jsonFile = await LocalFile.read(pathToJson, json)
   const serialized = JSON.stringify(jsonFile)
 
   t.is(typeof serialized, 'string')
@@ -124,19 +124,19 @@ test('Should return serialized JSON upon passing a JSON instance to JSON.stringi
 })
 
 test('Should throw an error upon passing an HTML instance to JSON.stringify', async t => {
-  const htmlFile = await LocalFile.load(pathToHtml, html)
+  const htmlFile = await LocalFile.read(pathToHtml, html)
 
   t.throws(() => JSON.stringify(htmlFile))
 })
 
 test('Should return serialized JSON upon calling `toString` with a JSON instance', async t => {
-  const jsonFile = await LocalFile.load(pathToJson, json)
+  const jsonFile = await LocalFile.read(pathToJson, json)
 
   t.is(jsonFile.toString(), JSON.stringify(json))
 })
 
 test('Should return the original HTML upon calling `toString` with an HTML instance', async t => {
-  const htmlFile = await LocalFile.load(pathToHtml, html)
+  const htmlFile = await LocalFile.read(pathToHtml, html)
 
   t.is(htmlFile.toString(), html)
 })
