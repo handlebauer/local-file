@@ -1,7 +1,9 @@
+import typescript from '@rollup/plugin-typescript'
+
 import pkg from './package.json' assert { type: 'json' }
 
 const main = './src/index.js'
-const utils = './src/index.js'
+const utils = './src/utils/index.js'
 
 const external = ['fs/promises', ...Object.keys(pkg.dependencies)]
 
@@ -14,6 +16,7 @@ export default [
       { file: pkg.exports['.'].require, format: 'cjs' },
       { file: pkg.exports['.'].import, format: 'esm' },
     ],
+    plugins: [typescript({ tsconfig: './jsconfig.json' })],
   },
   {
     input: utils,
@@ -22,5 +25,6 @@ export default [
       { file: pkg.exports['./utils'].require, format: 'cjs' },
       { file: pkg.exports['./utils'].import, format: 'esm' },
     ],
+    plugins: [typescript({ tsconfig: './jsconfig.json' })],
   },
 ]
