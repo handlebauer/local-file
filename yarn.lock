@@ -262,6 +262,14 @@
     eslint-import-resolver-alias "^1.1.2"
     eslint-plugin-import "^2.27.5"
 
+"@hbauer/local-file@^0.1.6":
+  version "0.1.6"
+  resolved "https://registry.yarnpkg.com/@hbauer/local-file/-/local-file-0.1.6.tgz#ed18d54a2d59ababcf1ad54af77d2a57996fa2fc"
+  integrity sha512-8TwEONV6BKidyBzjQgWuvpdUoSuhDWhl+44qh+lbFfU1uAfMtjFgibxymOgZ14Xd0/oTSzu1ZnrVKU8svHURAg==
+  dependencies:
+    "@hbauer/convenience-functions" "^0.33.0"
+    "@hbauer/time-since-file" "^0.2.0"
+
 "@hbauer/prettier-config@^1.1.0":
   version "1.1.0"
   resolved "https://registry.yarnpkg.com/@hbauer/prettier-config/-/prettier-config-1.1.0.tgz#c9a2aff583e4d88a89ecf8587361e82f8c1e268d"
