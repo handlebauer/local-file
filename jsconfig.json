@@ -9,7 +9,7 @@
     "outDir": "lib",
     "noEmit": false,
     "module": "esnext",
-    "moduleResolution": "node"
+    "moduleResolution": "nodenext"
   },
   "include": ["src/**/*"],
   "exclude": ["node_modules"]
