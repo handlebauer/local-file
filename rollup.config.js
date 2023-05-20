@@ -1,7 +1,7 @@
 import pkg from './package.json' assert { type: 'json' }
 
 const main = './src/index.js'
-const utils = './src/utils/index.js'
+const utils = './src/index.js'
 
 const external = ['fs/promises', ...Object.keys(pkg.dependencies)]
 
