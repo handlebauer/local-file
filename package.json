@@ -14,11 +14,8 @@
       "require": "./lib/utils/index.cjs"
     }
   },
-  "module": "./lib/index.mjs",
-  "main": "./lib/index.cjs",
   "files": [
-    "lib",
-    "types"
+    "lib"
   ],
   "author": "Donald Geddes",
   "licence": "MIT",
