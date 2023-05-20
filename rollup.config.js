@@ -1,5 +1,3 @@
-import typescript from '@rollup/plugin-typescript'
-
 import pkg from './package.json' assert { type: 'json' }
 
 const main = './src/index.js'
@@ -16,7 +14,6 @@ export default [
       { file: pkg.exports['.'].require, format: 'cjs' },
       { file: pkg.exports['.'].import, format: 'esm' },
     ],
-    plugins: [typescript({ tsconfig: './jsconfig.json' })],
   },
   {
     input: utils,
@@ -25,6 +22,5 @@ export default [
       { file: pkg.exports['./utils'].require, format: 'cjs' },
       { file: pkg.exports['./utils'].import, format: 'esm' },
     ],
-    plugins: [typescript({ tsconfig: './jsconfig.json' })],
   },
 ]
