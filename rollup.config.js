@@ -11,16 +11,16 @@ export default [
     input: main,
     external,
     output: [
-      { file: pkg.main, format: 'cjs' },
-      { file: pkg.module, format: 'esm' },
+      { file: pkg.exports['.'].require, format: 'cjs' },
+      { file: pkg.exports['.'].import, format: 'esm' },
     ],
   },
   {
     input: utils,
     external,
     output: [
-      { file: pkg.exports['./utils.js'].require, format: 'cjs' },
-      { file: pkg.exports['./utils.js'].import, format: 'esm' },
+      { file: pkg.exports['./utils'].require, format: 'cjs' },
+      { file: pkg.exports['./utils'].import, format: 'esm' },
     ],
   },
 ]
