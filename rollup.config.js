@@ -19,8 +19,8 @@ export default [
     input: utils,
     external,
     output: [
-      { file: pkg.exports['./utils'].require, format: 'cjs' },
-      { file: pkg.exports['./utils'].import, format: 'esm' },
+      { file: pkg.exports['./utils.js'].require, format: 'cjs' },
+      { file: pkg.exports['./utils.js'].import, format: 'esm' },
     ],
   },
 ]
