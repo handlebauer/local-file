@@ -7,6 +7,8 @@ $ yarn add @hbauer/local-file
 $ npm install @hbauer/local-file
 ```
 
+## Usage
+
 ```js
 import { LocalFile } from '@hbauer/local-file'
 
