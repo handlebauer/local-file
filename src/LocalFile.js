@@ -1,8 +1,8 @@
-import { stat } from 'fs/promises'
+import { readFile, stat } from 'fs/promises'
 import { timeSinceFile } from '@hbauer/time-since-file'
 import { plural } from '@hbauer/convenience-functions'
 import { throwUnlessENOENT } from './utils/throw-unless-enoent.js'
-import { writeToFile } from './utils/write-file.js'
+import { writeToFile } from './utils/write-to-file.js'
 
 /**
  * @typedef {import('./LocalFile.types.js').LocalFileTimeArray} LocalFileTimeArray
@@ -15,17 +15,19 @@ export class LocalFile {
    * @public
    *
    * @param {string} path
-   * @param {string | Record<string, any>} data
+   * @param {(data: string) => string | Record<string, any>} decode
    * @param {LocalFileStats} [stats]
    */
-  static async read(path, data, stats) {
+  static async read(path, decode, stats) {
     stats = stats || (await LocalFile.getStats(path))
 
     if (stats === null) {
       throw new Error(
-        `LocalFile: initialization error: path to file (${path}) does not exist`
+        `LocalFile: read error: path to file (${path}) does not exist`
       )
     }
+
+    const data = await readFile(path, 'utf-8').then(decode)
 
     return new LocalFile(path, data, stats)
   }
@@ -35,36 +37,35 @@ export class LocalFile {
    *
    * @param {string} path
    * @param {string | Record<string, any>} data
+   * @param {(data: string | Record<string, any>) => string} encode
    */
-  static async save(path, data) {
-    const stats = await LocalFile.getStats(path)
+  static async save(path, data, encode) {
+    let stats = await LocalFile.getStats(path)
 
     /**
-     * The file already exists - return it
+     * File already exists - return it
      */
     if (stats !== null) {
-      return LocalFile.read(path, data, stats)
+      return new LocalFile(path, data, stats)
     }
 
     if (typeof data === 'string') {
       await writeToFile(path, data)
     } else {
-      /**
-       * If the data isn't of type 'string' then we try to serialize the
-       * data assuming it's JSON. If this fails, throw an error.
-       */
       let seralizedData = undefined
       try {
-        seralizedData = JSON.stringify(data)
-      } catch (_) {
+        seralizedData = encode(data)
+      } catch (error) {
         throw new Error(
-          `LocalFile: save error: unable to serialize data using JSON.stringify`
+          `LocalFile: save error: unable to serialize data: ${error.message}`
         )
       }
       await writeToFile(path, seralizedData)
     }
 
-    return LocalFile.read(path, data, stats)
+    stats = await LocalFile.getStats(path)
+
+    return new LocalFile(path, data, stats)
   }
 
   /**
@@ -94,11 +95,8 @@ export class LocalFile {
     }
   }
 
-  /**
-   * @param {string | Record<string, any>} data
-   */
-  static getContentType(data) {
-    return typeof data === 'string' ? 'html' : 'json'
+  get type() {
+    return typeof this.data
   }
 
   /**
@@ -117,13 +115,13 @@ export class LocalFile {
      * @public
      * @readonly
      */
-    this.filename = path.split('/').at(-1)
+    this.exists = !!stats
 
     /**
      * @public
      * @readonly
      */
-    this.contentType = LocalFile.getContentType(data)
+    this.filename = path.split('/').at(-1)
 
     /**
      * @public
@@ -135,7 +133,7 @@ export class LocalFile {
      * @public
      * @readonly
      */
-    this.createdAt = stats.createdAt
+    this.createdAt = stats?.createdAt || null
   }
 
   /**
@@ -207,9 +205,9 @@ export class LocalFile {
   }
 
   toJSON() {
-    if (typeof this.data === 'string') {
+    if (this.type === 'string') {
       throw new Error(
-        `LocalFile: toJSON error: file has content of type \`${this.contentType}\`, which is incompatible`
+        `LocalFile: toJSON error: file has content of type \`${this.type}\`, which is incompatible`
       )
     }
 
@@ -217,6 +215,6 @@ export class LocalFile {
   }
 
   toString() {
-    return typeof this.data === 'string' ? this.data : JSON.stringify(this.data)
+    return this.type === 'string' ? this.data : JSON.stringify(this.data)
   }
 }

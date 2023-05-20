@@ -251,6 +251,13 @@
   dependencies:
     remeda "^1.14.0"
 
+"@hbauer/convenience-functions@^0.34.1":
+  version "0.34.1"
+  resolved "https://registry.yarnpkg.com/@hbauer/convenience-functions/-/convenience-functions-0.34.1.tgz#6146e8c127128dfca9f48a896ba9f75e611e41aa"
+  integrity sha512-go9lTp9+7lmqByMD93PfKGWWJ6YLDLTAtUBkyVO87fegmP0G6/7rzcBFLl7/6wY7DQsW0D5cjYWVcjhj/xu3gw==
+  dependencies:
+    remeda "^1.14.0"
+
 "@hbauer/eslint-config@^1.7.3":
   version "1.7.3"
   resolved "https://registry.yarnpkg.com/@hbauer/eslint-config/-/eslint-config-1.7.3.tgz#78338e7ffbdfcbed75663c4aab97b32b0a0ef7f9"

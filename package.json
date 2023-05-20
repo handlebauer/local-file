@@ -57,7 +57,7 @@
     "typescript": "^5.0.4"
   },
   "dependencies": {
-    "@hbauer/convenience-functions": "^0.33.0",
+    "@hbauer/convenience-functions": "^0.34.1",
     "@hbauer/local-file": "^0.1.6",
     "@hbauer/time-since-file": "^0.2.0"
   }
