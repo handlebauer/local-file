@@ -68,6 +68,11 @@ export class LocalFile {
 
     /**
      * @public
+     */
+    this.expired = false
+
+    /**
+     * @public
      * @readonly
      */
     this.createdAt = stats.createdAt || null
@@ -126,6 +131,11 @@ export class LocalFile {
     const actual = await this.sinceUpdated(unit)
 
     return input >= actual
+  }
+
+  expire() {
+    this.expired = true
+    return this
   }
 
   /**

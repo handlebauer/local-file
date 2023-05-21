@@ -162,6 +162,20 @@ test('Should return true upon invoking `newerThan` if the file is older than the
 
 /**
  *
+ * `expire` METHOD
+ *
+ */
+
+test('Should set the `expired` proeprty to false upon invoking the `expire` method', async t => {
+  const jsonFile = await LocalFile.read(json.path, json.decoder)
+
+  jsonFile.expire()
+
+  t.is(jsonFile.expired, true)
+})
+
+/**
+ *
  * `toJSON` method
  *
  */
