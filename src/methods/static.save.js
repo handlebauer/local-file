@@ -1,5 +1,4 @@
 import { typeOf } from '@hbauer/convenience-functions'
-import { isTruthy } from 'remeda'
 import { getStats } from './static.getStats.js'
 import { LocalFile } from '../LocalFile.js'
 import { writeToPath } from '../utils/write-to-path.js'
