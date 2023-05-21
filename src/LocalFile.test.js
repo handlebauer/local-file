@@ -1,15 +1,22 @@
 import _test from 'ava'
-import { mkdir, readFile, rm, writeFile } from 'fs/promises'
+import { mkdir, rm, writeFile } from 'fs/promises'
 import { sleep } from '@hbauer/convenience-functions'
 import { LocalFile } from './LocalFile.js'
+import { LocalFileError } from './errors/LocalFileError.js'
 
 const test = _test.serial // run all tests serially, as creating/removing files is hard to reason about otherwise
 
-const baseDirectory = 'test-local-file'
-const fileDirectory = 'test-local-file/to'
+/**
+ *
+ * MOCK DATA
+ *
+ */
+
+const baseDirectory = '__test-LocalFile'
+const fileDirectory = `${baseDirectory}/to`
 
 const json = {
-  path: 'test-local-file/to/json',
+  path: `${fileDirectory}/json`,
   data: { foo: 'bar' },
   type: typeof {},
   encoder: JSON.stringify,
@@ -17,12 +24,18 @@ const json = {
 }
 
 const html = {
-  path: 'test-local-file/to/html',
+  path: `${fileDirectory}/html`,
   data: '<html><head><title>hello</title></head><body>world</body></html>',
   type: typeof '',
   encoder: (/** @type {string} */ html) => html,
   decoder: (/** @type {string} */ html) => html,
 }
+
+/**
+ *
+ * HANDLERS
+ *
+ */
 
 test.beforeEach('test', async _ => {
   await mkdir(fileDirectory, { recursive: true })
@@ -38,8 +51,18 @@ test.afterEach('test', async _ => {
   await sleep(10)
 })
 
+/**
+ *
+ * CONSTRUCTOR
+ *
+ */
+
 test('Should return valid instances with sensible defaults upon initialization', async t => {
-  const jsonFile = await LocalFile.read(json.path, json.decoder)
+  const jsonFile = new LocalFile(
+    json.path,
+    json.data,
+    await LocalFile.getStats(json.path)
+  )
 
   t.is(jsonFile.path, json.path)
   t.deepEqual(jsonFile.data, json.data)
@@ -47,51 +70,45 @@ test('Should return valid instances with sensible defaults upon initialization',
   t.true(jsonFile.createdAt.date <= new Date())
   t.true((await jsonFile.updatedAt).date < new Date())
 
-  const htmlFile = await LocalFile.read(html.path, html.decoder)
+  const htmlFile = new LocalFile(
+    html.path,
+    html.data,
+    await LocalFile.getStats(html.path)
+  )
 
   t.is(htmlFile.path, html.path)
   t.is(htmlFile.data, html.data)
   t.is(htmlFile.type, html.type)
-  t.true(htmlFile.createdAt.date < new Date())
-  t.true((await htmlFile.updatedAt).date < new Date())
-})
 
-test('Should write a file to the local filesystem and return a new instance upon invoking the `save` method', async t => {
-  const jsonPath = `${json.path}?test=save&type=json` // different than the default
-  const jsonFile = await LocalFile.save(jsonPath, json.data, JSON.stringify)
+  await sleep(10)
 
-  const savedJsonData = await readFile(jsonPath, 'utf-8').then(JSON.parse)
-
-  t.is(jsonFile.path, jsonPath)
-  t.deepEqual(jsonFile.data, json.data)
-  t.deepEqual(jsonFile.data, savedJsonData)
-  t.is(jsonFile.type, json.type)
-  t.true(jsonFile.createdAt.date <= new Date())
-  t.true((await jsonFile.updatedAt).date <= new Date())
-
-  const htmlPath = `${json.path}?test=save&type=html` // different than the default
-  const encode = (/** @type {string} */ html) => html
-  const htmlFile = await LocalFile.save(htmlPath, html.data, encode)
-
-  const savedHtmlData = await readFile(htmlPath, 'utf-8')
-
-  t.is(htmlFile.path, htmlPath)
-  t.is(htmlFile.data, html.data)
-  t.is(htmlFile.data, savedHtmlData)
-  t.is(htmlFile.type, html.type)
   t.true(htmlFile.createdAt.date <= new Date())
   t.true((await htmlFile.updatedAt).date <= new Date())
 })
 
-test('Should read a file and return a new instance upon invoking the `save` method if the already exists', async t => {
-  const jsonFile = await LocalFile.save(json.path, json, JSON.stringify)
+test('Should return a `LocalFileError` upon initialization if required parameters are not provided', async t => {
+  await t.throwsAsync(
+    async () =>
+      new LocalFile(null, json.path, await LocalFile.getStats(json.path)),
+    { instanceOf: LocalFileError }
+  )
 
-  t.is(jsonFile.path, json.path)
-  t.is(jsonFile.data, json)
-  t.is(jsonFile.type, json.type)
-  t.true(jsonFile.createdAt.date <= new Date())
-  t.true((await jsonFile.updatedAt).date < new Date())
+  await t.throwsAsync(
+    async () =>
+      new LocalFile(json.path, null, await LocalFile.getStats(json.path)),
+    { instanceOf: LocalFileError }
+  )
+
+  t.throws(() => new LocalFile(json.path, json.path), {
+    instanceOf: LocalFileError,
+  })
 })
+
+/**
+ *
+ * `sinceUpdatedd` METHOD
+ *
+ */
 
 test('Should return valid duration since last update when invoking `sinceUpdated`', async t => {
   const jsonFile = await LocalFile.read(json.path, json.decoder)
@@ -107,6 +124,12 @@ test('Should return valid duration since file creation when invoking `sinceCreat
   t.true((await jsonFile.sinceCreated('seconds')) < 10)
 })
 
+/**
+ *
+ * `olderThan` METHOD
+ *
+ */
+
 test('Should return false upon invoking `olderThan` if the file is newer than the provided duration', async t => {
   const jsonFile = await LocalFile.read(json.path, json.decoder)
 
@@ -119,6 +142,12 @@ test('Should return true upon invoking `olderThan` if the file is older than the
   t.true(await jsonFile.olderThan([0, 'milliseconds']))
 })
 
+/**
+ *
+ * `newerThan` METHOD
+ *
+ */
+
 test('Should return false upon invoking `newerThan` if the file is newer than the provided duration', async t => {
   const jsonFile = await LocalFile.read(json.path, json.decoder)
 
@@ -130,6 +159,12 @@ test('Should return true upon invoking `newerThan` if the file is older than the
 
   t.true(await jsonFile.newerThan([99, 'days']))
 })
+
+/**
+ *
+ * `toJSON` method
+ *
+ */
 
 test('Should return serialized JSON upon passing an instance to JSON.stringify', async t => {
   const jsonFile = await LocalFile.read(json.path, json.decoder)
@@ -151,8 +186,14 @@ test('Should return serialized JSON upon passing a JSON instance to JSON.stringi
 test('Should throw an error upon passing an HTML instance to JSON.stringify', async t => {
   const htmlFile = await LocalFile.read(html.path, html.decoder)
 
-  t.throws(() => JSON.stringify(htmlFile))
+  t.throws(() => JSON.stringify(htmlFile), { instanceOf: LocalFileError })
 })
+
+/**
+ *
+ * `toString` METHOD
+ *
+ */
 
 test('Should return serialized JSON upon calling `toString` with a JSON instance', async t => {
   const jsonFile = await LocalFile.read(json.path, json.decoder)

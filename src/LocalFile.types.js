@@ -17,6 +17,8 @@
  * createdAt: LocalFileStatTime
  * updatedAt: LocalFileStatTime
  * }} LocalFileStats
+ *
+ * @typedef { string | Record<string, any> | Record<string, any>[]} LocalFileAccept
  */
 
 export {}

@@ -2,6 +2,7 @@ import pkg from './package.json' assert { type: 'json' }
 
 const main = './src/index.js'
 const utils = './src/utils/index.js'
+const errors = './src/utils/index.js'
 
 const external = ['fs/promises', ...Object.keys(pkg.dependencies)]
 
@@ -19,8 +20,16 @@ export default [
     input: utils,
     external,
     output: [
-      { file: pkg.exports['./utils'].require, format: 'cjs' },
-      { file: pkg.exports['./utils'].import, format: 'esm' },
+      { file: pkg.exports['./utils.js'].require, format: 'cjs' },
+      { file: pkg.exports['./utils.js'].import, format: 'esm' },
+    ],
+  },
+  {
+    input: errors,
+    external,
+    output: [
+      { file: pkg.exports['./errors.js'].require, format: 'cjs' },
+      { file: pkg.exports['./errors.js'].import, format: 'esm' },
     ],
   },
 ]

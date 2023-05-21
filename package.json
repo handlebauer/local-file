@@ -8,10 +8,15 @@
       "import": "./lib/index.mjs",
       "require": "./lib/index.cjs"
     },
-    "./utils": {
+    "./utils.js": {
       "types": "./lib/utils/index.d.ts",
       "import": "./lib/utils/index.mjs",
       "require": "./lib/utils/index.cjs"
+    },
+    "./errors.js": {
+      "types": "./lib/errors/index.d.ts",
+      "import": "./lib/errors/index.mjs",
+      "require": "./lib/errors/index.cjs"
     }
   },
   "types": "./lib/index.d.ts",
@@ -29,6 +34,11 @@
   "ava": {
     "require": [
       "dotenv/config"
+    ],
+    "concurrency": 1,
+    "files": [
+      "src/**/*.test.js",
+      "src/test/!(mock)/**.js"
     ]
   },
   "prettier": "@hbauer/prettier-config",
@@ -59,6 +69,8 @@
   "dependencies": {
     "@hbauer/convenience-functions": "^0.34.1",
     "@hbauer/local-file": "^0.1.6",
-    "@hbauer/time-since-file": "^0.2.0"
+    "@hbauer/time-since-file": "^0.2.0",
+    "remeda": "^1.14.0",
+    "zod": "^3.21.4"
   }
 }

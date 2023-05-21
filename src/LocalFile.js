@@ -1,102 +1,43 @@
-import { readFile, stat } from 'fs/promises'
 import { timeSinceFile } from '@hbauer/time-since-file'
 import { plural } from '@hbauer/convenience-functions'
-import { throwUnlessENOENT } from './utils/throw-unless-enoent.js'
-import { writeToFile } from './utils/write-to-file.js'
+import { LocalFileError } from './errors/LocalFileError.js'
+import { save } from './methods/static.save.js'
+import { read } from './methods/static.read.js'
+import { getStats } from './methods/static.getStats.js'
 
 /**
  * @typedef {import('./LocalFile.types.js').LocalFileTimeArray} LocalFileTimeArray
  * @typedef {import('./LocalFile.types.js').LocalFileTimeUnit} LocalFileTimeUnit
- * @typedef {import('./LocalFile.types.js').LocalFileStats} LocalFileStats
  */
 
 export class LocalFile {
   /**
    * @public
-   *
-   * @param {string} path
-   * @param {(data: string) => string | Record<string, any>} decode
-   * @param {LocalFileStats} [stats]
-   */
-  static async read(path, decode, stats) {
-    stats = stats || (await LocalFile.getStats(path))
-
-    if (stats === null) {
-      throw new Error(
-        `LocalFile: read error: path to file (${path}) does not exist`
-      )
-    }
-
-    const data = await readFile(path, 'utf-8').then(decode)
-
-    return new LocalFile(path, data, stats)
-  }
-
-  /**
-   * @public
-   *
    * @param {string} path
    * @param {string | Record<string, any>} data
-   * @param {(data: string | Record<string, any>) => string} encode
+   * @param {LocalFileStats} stats
    */
-  static async save(path, data, encode) {
-    let stats = await LocalFile.getStats(path)
-
-    /**
-     * File already exists - return it
-     */
-    if (stats !== null) {
-      return new LocalFile(path, data, stats)
+  static ensureConstructorParams(path, data, stats) {
+    if (path === null) {
+      throw new LocalFileError({
+        title: 'constructor',
+        description: `path must be defined (found: ${path})`,
+      })
     }
 
-    if (typeof data === 'string') {
-      await writeToFile(path, data)
-    } else {
-      let seralizedData = undefined
-      try {
-        seralizedData = encode(data)
-      } catch (error) {
-        throw new Error(
-          `LocalFile: save error: unable to serialize data: ${error.message}`
-        )
-      }
-      await writeToFile(path, seralizedData)
+    if (data === null) {
+      throw new LocalFileError({
+        title: 'constructor',
+        description: `data must be defined (found: ${data})`,
+      })
     }
-
-    stats = await LocalFile.getStats(path)
-
-    return new LocalFile(path, data, stats)
-  }
-
-  /**
-   * Returns file statistics if and only if the file exists
-   *
-   * @private
-   * @param {string} path
-   * @returns {Promise<LocalFileStats>}
-   */
-  static async getStats(path) {
-    const stats = await stat(path).catch(throwUnlessENOENT)
 
     if (stats === null) {
-      return null
+      throw new LocalFileError({
+        title: 'constructor',
+        description: `stats must be defined (found: ${stats})`,
+      })
     }
-
-    return {
-      size: stats.size,
-      createdAt: {
-        date: stats.ctime,
-        milliseconds: stats.ctimeMs,
-      },
-      updatedAt: {
-        date: stats.mtime,
-        milliseconds: stats.mtimeMs,
-      },
-    }
-  }
-
-  get type() {
-    return typeof this.data
   }
 
   /**
@@ -104,18 +45,14 @@ export class LocalFile {
    * @param {string | Record<string, any>} data
    * @param {LocalFileStats} stats
    */
-  constructor(path, data, stats) {
-    /**
-     * @public
-     * @readonly
-     */
-    this.path = path
+  constructor(path = null, data = null, stats = null) {
+    LocalFile.ensureConstructorParams(path, data, stats)
 
     /**
      * @public
      * @readonly
      */
-    this.exists = !!stats
+    this.path = path
 
     /**
      * @public
@@ -133,7 +70,16 @@ export class LocalFile {
      * @public
      * @readonly
      */
-    this.createdAt = stats?.createdAt || null
+    this.createdAt = stats.createdAt || null
+  }
+
+  /**
+   * The JavaScript type attributed to the data
+   *
+   * @public
+   */
+  get type() {
+    return typeof this.data
   }
 
   /**
@@ -206,9 +152,10 @@ export class LocalFile {
 
   toJSON() {
     if (this.type === 'string') {
-      throw new Error(
-        `LocalFile: toJSON error: file has content of type \`${this.type}\`, which is incompatible`
-      )
+      throw new LocalFileError({
+        title: 'toJSON',
+        description: `file is of type ${this.type}, which is incompatible with JSON.stringify`,
+      })
     }
 
     return this.data
@@ -218,3 +165,31 @@ export class LocalFile {
     return this.type === 'string' ? this.data : JSON.stringify(this.data)
   }
 }
+
+/**
+ * @public
+ * @param {string} path
+ * @param {string | Record<string, any>} data
+ * @param {(data: string | Record<string, any>) => string} encode
+ */
+LocalFile.save = save
+
+/**
+ * @typedef {import("./LocalFile.types.js").LocalFileStats} LocalFileStats
+ *
+ * @public
+ * @param {string} path
+ * @param {(data: string) => string | Record<string, any>} decode
+ * @param {LocalFileStats} [stats]
+ */
+
+LocalFile.read = read
+
+/**
+ * Returns file statistics if and only if the file exists
+ *
+ * @public
+ * @param {string} path
+ * @returns {Promise<LocalFileStats>}
+ */
+LocalFile.getStats = getStats
