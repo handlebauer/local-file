@@ -40,8 +40,6 @@ const html = {
 
 test.beforeEach('test', async _ => {
   await mkdir(fileDirectory, { recursive: true })
-  await writeFile(json.path, JSON.stringify(json.data))
-  await writeFile(html.path, html.data)
 
   await sleep(10)
 })
