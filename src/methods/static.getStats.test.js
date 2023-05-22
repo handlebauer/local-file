@@ -55,10 +55,19 @@ test("Should generate stats for a file given the file's path", async t => {
   const stats = await getStats(json.path)
 
   t.is(typeOf(stats.createdAt.date), 'date')
+  t.is(stats.createdAt.date.getDay(), new Date().getDay())
+
   t.is(typeOf(stats.updatedAt.date), 'date')
+  t.is(stats.updatedAt.date.getDay(), new Date().getDay())
+
   t.is(typeOf(stats.createdAt.milliseconds), 'number')
-  t.is(typeOf(stats.updatedAt.milliseconds), 'number')
-  t.is(typeOf(stats.size), 'number')
+  t.true(stats.updatedAt.milliseconds > Date.now() - 1e6)
+
+  t.is(typeOf(stats.createdAt.milliseconds), 'number')
+  t.true(stats.updatedAt.milliseconds > Date.now() - 1e6)
+
+  t.is(typeOf(stats.size.bytes), 'number')
+  t.is(stats.size.bytes, JSON.stringify(json.data).length)
 })
 
 test("Should return null if the file doesn't exist", async t => {

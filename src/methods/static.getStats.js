@@ -39,7 +39,12 @@ export async function getStats(path) {
   }
 
   return {
-    size: stats.size,
+    size: {
+      bytes: stats.size,
+      kilobytes: stats.size / 1e3,
+      megabytes: stats.size / 1e6,
+      gigabytes: stats.size / 1e9,
+    },
     createdAt: {
       date: stats.ctime,
       milliseconds: stats.ctimeMs,

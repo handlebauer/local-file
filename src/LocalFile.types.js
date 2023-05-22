@@ -6,7 +6,14 @@
  * }} LocalFileStatTime
  *
  * @typedef {{
- * size: number
+ * bytes: number
+ * kilobytes: number
+ * megabytes: number
+ * gigabytes: number
+ * }} FileSizeUnits
+ *
+ * @typedef {{
+ * size: FileSizeUnits
  * createdAt: LocalFileStatTime
  * updatedAt: LocalFileStatTime
  * }} LocalFileStats
