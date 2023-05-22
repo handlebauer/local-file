@@ -50,15 +50,14 @@ const validateParams = (path, data, encode) => {
  * @param {LocalFileAccepts} data
  * @param {(data: LocalFileAccepts) => string} [encode]
  * @param {{ returnExisting?: boolean }} [options]
+ * @returns {Promise<LocalFile>}
  */
 export async function save(path, data, encode, options = {}) {
   ;({ path, data, encode } = validateParams(path, data, encode))
 
-  const { returnExisting } = options
-
   let stats = await LocalFile.getStats(path)
 
-  if (returnExisting === true && stats !== null) {
+  if (options.returnExisting === true && stats !== null) {
     return new LocalFile(path, data, stats)
   }
 

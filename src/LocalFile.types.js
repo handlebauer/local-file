@@ -17,8 +17,6 @@
  * createdAt: LocalFileStatTime
  * updatedAt: LocalFileStatTime
  * }} LocalFileStats
- *
- * @typedef {Record<string, any>} LocalFileJSObject
  */
 
 export {}

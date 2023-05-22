@@ -41,6 +41,7 @@ const validateParams = (path, decode) => {
  * @param {LocalFilePath} path
  * @param {LocalFileEDecodeFunction} decode
  * @param {LocalFileStats} [stats]
+ * @returns {Promise<LocalFile>}
  */
 export async function read(path, decode, stats) {
   ;({ path, decode } = validateParams(path, decode))

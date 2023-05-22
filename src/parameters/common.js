@@ -4,10 +4,7 @@ import { z } from 'zod'
 export const filePath = z.string().nonempty()
 
 /** @typedef {z.infer<typeof fileAccepts>} LocalFileAccepts */
-export const fileAccepts = z.union([
-  z.string().nonempty(),
-  z.record(z.any(), z.any()),
-])
+export const fileAccepts = z.any()
 
 /** @typedef {z.infer<typeof encodeFunction>} LocalFileEncodeFunction */
 export const encodeFunction = z
