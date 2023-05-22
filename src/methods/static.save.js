@@ -2,6 +2,7 @@ import * as validate from '../parameters/common.js'
 import { LocalFile } from '../LocalFile.js'
 import { writeToPath } from '../utils/write-to-path.js'
 import { LocalFileError } from '../errors/LocalFileError.js'
+import { throwUnlessENOENT } from '../errors/throw-unless-enoent.js'
 
 /**
  * @param {string} path
@@ -55,7 +56,7 @@ const validateParams = (path, data, encode) => {
 export async function save(path, data, encode, options = {}) {
   ;({ path, data, encode } = validateParams(path, data, encode))
 
-  let stats = await LocalFile.getStats(path)
+  let stats = await LocalFile.getStats(path).catch(throwUnlessENOENT)
 
   if (options.returnExisting === true && stats !== null) {
     return new LocalFile(path, data, stats)
