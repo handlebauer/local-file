@@ -78,6 +78,7 @@ test('Should return valid instances with sensible defaults upon initialization',
   t.is(htmlFile.path, html.path)
   t.is(htmlFile.data, html.data)
   t.is(htmlFile.type, html.type)
+  t.is(htmlFile.size, html.data.length)
 
   await sleep(10)
 
