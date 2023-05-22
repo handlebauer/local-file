@@ -69,10 +69,10 @@ export class LocalFile {
     /**
      * When the file was created
      *
-     * Note: this value is only valid for the file when it was
-     * instantiated as a LocalFile. The LocalFile instance may or may
-     * not reflect the actual date of the file's creation as this may
-     * have changed since; for instance, if the file was deleted and
+     * Note: this value is only guaranteed to valid for the file when it
+     * was instantiated as a LocalFile. The LocalFile instance may or
+     * may not reflect the actual date of the file's creation as this
+     * may have changed since; for instance, if the file was deleted and
      * re-created since this LocalFile was instantiated, the createdAt
      * value may be stale. It is safer to use the getStats() method as
      * it better reflects the file's actual state on the file-system.
@@ -85,13 +85,13 @@ export class LocalFile {
     /**
      * The length in bytes of the file
      *
-     * Note: this value is only valid for the file when it was
-     * instantiated as a LocalFile. The LocalFile instance may or may
-     * not reflect the actual date of the file's size as this may have
-     * changed since; for instance, if the file was updated since this
-     * LocalFile was instantiated, the createdAt value may be stale. It
-     * is safer to use the getStats() method as it better reflects the
-     * file's actual state on the file-system.
+     * Note: this value is only guaranteed to valid for the file when it
+     * was instantiated as a LocalFile. The LocalFile instance may or
+     * may not reflect the actual date of the file's size as this may
+     * have changed since; for instance, if the file was updated since
+     * this LocalFile was instantiated, the createdAt value may be
+     * stale. It is safer to use the getStats() method as it better
+     * reflects the file's actual state on the file-system.
      *
      * @public
      * @readonly

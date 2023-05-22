@@ -1,6 +1,7 @@
 import _test from 'ava'
 import { mkdir, rm, writeFile } from 'fs/promises'
 import { sleep, typeOf } from '@hbauer/convenience-functions'
+import { randomString } from 'remeda'
 import { getStats } from './static.getStats.js'
 import { LocalFileError } from '../errors/LocalFileError.js'
 
@@ -70,10 +71,11 @@ test("Should generate stats for a file given the file's path", async t => {
   t.is(stats.size.bytes, JSON.stringify(json.data).length)
 })
 
-test("Should return null if the file doesn't exist", async t => {
-  const stats = await getStats('hmLI0kw8bg8=rCsIrfKQ')
-
-  t.is(stats, null)
+test("Should throw an error if the file doesn't exist", async t => {
+  await t.throwsAsync(() => getStats(randomString(10)), {
+    instanceOf: LocalFileError,
+    code: 'ENOENT',
+  })
 })
 
 test('Should return an error if the provided path is nullish or not a string', async t => {

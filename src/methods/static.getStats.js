@@ -1,6 +1,5 @@
 import { stat } from 'fs/promises'
 import * as validate from '../parameters/common.js'
-import { throwUnlessENOENT } from '../errors/throw-unless-enoent.js'
 import { LocalFileError } from '../errors/LocalFileError.js'
 
 /**
@@ -32,10 +31,16 @@ const validateParams = path => {
 export async function getStats(path) {
   ;({ path } = validateParams(path))
 
-  const stats = await stat(path).catch(throwUnlessENOENT)
+  let stats = undefined
 
-  if (stats === null) {
-    return null
+  try {
+    stats = await stat(path)
+  } catch (error) {
+    throw new LocalFileError({
+      title: 'getStats',
+      description: `path to file (${path}) does not exist`,
+      parent: error,
+    })
   }
 
   return {
