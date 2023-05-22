@@ -67,7 +67,6 @@ test('Should read a file from the local filesystem and return a new instance', a
   await sleep(10)
 
   t.true(jsonFile.createdAt.date <= new Date())
-  t.true((await jsonFile.updatedAt).date <= new Date())
 
   const htmlPath = `${json.path}?test=read&type=html` // different than the default
 
@@ -83,7 +82,6 @@ test('Should read a file from the local filesystem and return a new instance', a
   await sleep(10)
 
   t.true(htmlFile.createdAt.date <= new Date())
-  t.true((await htmlFile.updatedAt).date <= new Date())
 })
 
 test("Should throw an error if the provided path doesn't exist", async t => {

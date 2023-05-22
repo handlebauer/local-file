@@ -2,6 +2,7 @@ import _test from 'ava'
 import { mkdir, rm, writeFile } from 'fs/promises'
 import { sleep, typeOf } from '@hbauer/convenience-functions'
 import { getStats } from './static.getStats.js'
+import { LocalFileError } from '../errors/LocalFileError.js'
 
 const test = _test.serial // run all tests serially, as creating/removing files is hard to reason about otherwise
 
@@ -66,16 +67,15 @@ test("Should return null if the file doesn't exist", async t => {
   t.is(stats, null)
 })
 
-test('Should return null if the provided path is nullish or not a string', async t => {
-  t.is(await getStats(null), null)
-  t.is(await getStats(undefined), null)
+test('Should return an error if the provided path is nullish or not a string', async t => {
+  const instanceOf = LocalFileError
+
+  await t.throwsAsync(() => getStats(null), { instanceOf })
+  await t.throwsAsync(() => getStats(undefined), { instanceOf })
 
   // @ts-ignore
-  t.is(await getStats(0), null)
+  await t.throwsAsync(() => getStats(0), { instanceOf })
 
   // @ts-ignore
-  t.is(await getStats(new Date()), null)
-
-  // @ts-ignore
-  t.is(await getStats(Symbol('what')), null)
+  await t.throwsAsync(() => getStats(Symbol('!string')), { instanceOf })
 })

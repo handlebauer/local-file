@@ -1,68 +1,82 @@
-import { typeOf } from '@hbauer/convenience-functions'
-import { getStats } from './static.getStats.js'
+import * as validate from '../parameters/common.js'
 import { LocalFile } from '../LocalFile.js'
 import { writeToPath } from '../utils/write-to-path.js'
 import { LocalFileError } from '../errors/LocalFileError.js'
 
 /**
+ * @param {string} path
+ * @param {LocalFileAccepts} data
+ * @param {(data: LocalFileAccepts) => string} encode
+ */
+const validateParams = (path, data, encode) => {
+  const validatedPath = validate.filePath.safeParse(path)
+  const validatedData = validate.fileAccepts.safeParse(data)
+  const validatedEncode = validate.encodeFunction.safeParse(encode)
+
+  if (validatedPath.success === false) {
+    throw new LocalFileError({
+      title: 'save[path parameter]',
+      description: validatedPath.error.message,
+    })
+  }
+
+  if (validatedData.success === false) {
+    throw new LocalFileError({
+      title: 'save[data parameter]',
+      description: validatedData.error.message,
+    })
+  }
+
+  if (validatedEncode.success === false) {
+    throw new LocalFileError({
+      title: 'save[encode parameter]',
+      description: validatedEncode.error.message,
+    })
+  }
+
+  return {
+    path: validatedPath.data,
+    data: validatedData.data,
+    encode: validatedEncode.data,
+  }
+}
+
+/**
  * @public
  *
- * @typedef {import('../LocalFile.types.js').LocalFileAccept} LocalFileAccept
+ * @typedef {import('../parameters/common.js').LocalFileAccepts} LocalFileAccepts
  *
  * @param {string} path
- * @param {LocalFileAccept} data
- * @param {(data: LocalFileAccept) => string} encode
+ * @param {LocalFileAccepts} data
+ * @param {(data: LocalFileAccepts) => string} [encode]
+ * @param {{ returnExisting?: boolean }} [options]
  */
-export async function save(path = null, data = null, encode) {
-  if (typeof path !== 'string' || path === null) {
-    throw new LocalFileError({
-      title: 'save',
-      description: `found an empty path or a path of an incompatible type (${typeof path})`,
-    })
-  }
+export async function save(path, data, encode, options = {}) {
+  ;({ path, data, encode } = validateParams(path, data, encode))
 
-  if (
-    data === '' ||
-    (typeof data !== 'string' &&
-      typeOf(data) !== 'object' &&
-      typeOf(data) !== 'array')
-  ) {
-    throw new LocalFileError({
-      title: 'save',
-      description: data
-        ? `found empty data or data of an incompatible type (${typeOf(data)})`
-        : 'found empty data or data of an incompatible type',
-    })
-  }
+  const { returnExisting } = options
 
-  let stats = await getStats(path)
+  let stats = await LocalFile.getStats(path)
 
-  /**
-   * File already exists - return it
-   */
-  if (stats !== null) {
+  if (returnExisting === true && stats !== null) {
     return new LocalFile(path, data, stats)
   }
 
   if (typeof data === 'string') {
     await writeToPath(path, data)
   } else {
-    let seralizedData = undefined
-
     try {
-      seralizedData = encode(data)
+      await writeToPath(path, encode(data))
     } catch (error) {
       throw new LocalFileError({
         title: 'save',
-        description: `failed while serializing data`,
+        description: `failed while serializing/writing data`,
         parent: error,
       })
     }
-
-    await writeToPath(path, seralizedData)
   }
 
-  stats = await getStats(path)
+  stats = await LocalFile.getStats(path)
 
   return new LocalFile(path, data, stats)
 }

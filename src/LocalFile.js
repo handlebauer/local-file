@@ -1,52 +1,47 @@
-import { timeSinceFile } from '@hbauer/time-since-file'
+import { forEach, isTruthy, pipe } from 'remeda'
 import { plural } from '@hbauer/convenience-functions'
 import { LocalFileError } from './errors/LocalFileError.js'
-import { save } from './methods/static.save.js'
-import { read } from './methods/static.read.js'
-import { getStats } from './methods/static.getStats.js'
+import * as methods from './methods/index.js'
+import * as utils from './utils/index.js'
 
 /**
- * @typedef {import('./LocalFile.types.js').LocalFileTimeArray} LocalFileTimeArray
- * @typedef {import('./LocalFile.types.js').LocalFileTimeUnit} LocalFileTimeUnit
+ * @typedef {import('./parameters/common.js').LocalFilePath} LocalFilePath
+ * @typedef {import('./parameters/common.js').LocalFileAccepts} LocalFileAccepts
+ * @typedef {import('./parameters/file-age.js').FileAgeDurationUnit} FileAgeDurationUnit
+ * @typedef {import('./parameters/file-age.js').LocalFileAgeDuration} LocalFileAgeDuration
+ * @typedef {import("./LocalFile.types.js").LocalFileStats} LocalFileStats
  */
 
 export class LocalFile {
   /**
-   * @public
-   * @param {string} path
-   * @param {string | Record<string, any>} data
-   * @param {LocalFileStats} stats
+   * @typedef {ConstructorParameters<typeof LocalFile>} LocalFileConstructorParams
+   *
+   * @private
+   * @param {{ path: LocalFilePath, data: LocalFileAccepts, stats: LocalFileStats }} args
    */
-  static ensureConstructorParams(path, data, stats) {
-    if (path === null) {
-      throw new LocalFileError({
-        title: 'constructor',
-        description: `path must be defined (found: ${path})`,
-      })
+  static ensureConstructorParams(args) {
+    /**
+     * @param {[string, LocalFileConstructorParams[number]]} argArray
+     */
+    const throwIfNil = ([name, arg]) => {
+      if (isTruthy(arg) === false) {
+        throw new LocalFileError({
+          title: 'constructor parameters',
+          description: `${name} must be defined (found: ${arg})`,
+        })
+      }
     }
 
-    if (data === null) {
-      throw new LocalFileError({
-        title: 'constructor',
-        description: `data must be defined (found: ${data})`,
-      })
-    }
-
-    if (stats === null) {
-      throw new LocalFileError({
-        title: 'constructor',
-        description: `stats must be defined (found: ${stats})`,
-      })
-    }
+    pipe(Object.entries(args), forEach(throwIfNil))
   }
 
   /**
    * @param {string} path
-   * @param {string | Record<string, any>} data
+   * @param {LocalFileAccepts} data
    * @param {LocalFileStats} stats
    */
   constructor(path = null, data = null, stats = null) {
-    LocalFile.ensureConstructorParams(path, data, stats)
+    LocalFile.ensureConstructorParams({ path, data, stats })
 
     /**
      * @public
@@ -69,7 +64,7 @@ export class LocalFile {
     /**
      * @public
      */
-    this.expired = false
+    this.isExpired = false
 
     /**
      * @public
@@ -88,83 +83,51 @@ export class LocalFile {
   }
 
   /**
-   * When the file was last updated (returns a promise)
+   * Current file statistics, e.g. time last updated
    *
    * @public
    */
-  get updatedAt() {
-    return LocalFile.getStats(this.path).then(stats => stats.updatedAt)
+  getStats() {
+    return LocalFile.getStats(this.path)
   }
 
   /**
-   * The byte length of the file (returns a promise)
+   * Get the time (by unit) since a file was last updated
    *
    * @public
-   */
-  get size() {
-    return LocalFile.getStats(this.path).then(stats => stats.size)
-  }
-
-  /**
-   * Returns true if the file is equal to or older than the specified duration
-   *
-   * @public
-   * @param {LocalFileTimeArray} duration
-   */
-  async olderThan(duration) {
-    const [input, unit] = duration
-
-    const actual = await this.sinceUpdated(unit)
-
-    return input <= actual
-  }
-
-  /**
-   * Returns true if the file is equal to or newer than the specified duration
-   *
-   * @public
-   * @param {LocalFileTimeArray} duration
-   */
-  async newerThan(duration) {
-    const [input, unit] = duration
-
-    const actual = await this.sinceUpdated(unit)
-
-    return input >= actual
-  }
-
-  expire() {
-    this.expired = true
-    return this
-  }
-
-  /**
-   * Get the time (per unit) since a file was last updated
-   *
-   * @public
-   * @param {LocalFileTimeUnit} unit
+   * @param {FileAgeDurationUnit} unit
    */
   async sinceUpdated(unit = 'milliseconds') {
-    const since = await timeSinceFile(this.path)
+    const since = await utils.fileAge(this)
     return since.updated[plural(unit)]
   }
 
   /**
-   * Get the time (per unit) since a file was last updated
+   * Get the time (by unit) since a file was last updated
    *
    * @public
-   * @param {LocalFileTimeUnit} unit
+   * @param {FileAgeDurationUnit} unit
    */
-  async sinceCreated(unit) {
-    const since = await timeSinceFile(this.path)
+  async sinceCreated(unit = 'milliseconds') {
+    const since = await utils.fileAge(this)
     return since.created[plural(unit)]
+  }
+
+  /**
+   * Mark file as expired
+   *
+   * @public
+   */
+  expire() {
+    this.isExpired = true
+    return this
   }
 
   toJSON() {
     if (this.type === 'string') {
       throw new LocalFileError({
         title: 'toJSON',
-        description: `file is of type ${this.type}, which is incompatible with JSON.stringify`,
+        description: `file's data is of type ${this.type}, which is incompatible with JSON.stringify`,
       })
     }
 
@@ -178,28 +141,41 @@ export class LocalFile {
 
 /**
  * @public
- * @param {string} path
- * @param {string | Record<string, any>} data
- * @param {(data: string | Record<string, any>) => string} encode
+ * @param {LocalFilePath} path
+ * @param {LocalFileAccepts} data
+ * @param {(data: LocalFileAccepts) => string} encode
  */
-LocalFile.save = save
+LocalFile.save = methods.save
 
 /**
- * @typedef {import("./LocalFile.types.js").LocalFileStats} LocalFileStats
- *
  * @public
- * @param {string} path
- * @param {(data: string) => string | Record<string, any>} decode
+ * @param {LocalFilePath} path
+ * @param {(rawData: string) => LocalFileAccepts} decode
  * @param {LocalFileStats} [stats]
  */
-
-LocalFile.read = read
+LocalFile.read = methods.read
 
 /**
  * Returns file statistics if and only if the file exists
  *
  * @public
- * @param {string} path
+ * @param {LocalFilePath} path
  * @returns {Promise<LocalFileStats>}
  */
-LocalFile.getStats = getStats
+LocalFile.getStats = methods.getStats
+
+/**
+ * Returns true if the file is equal to or older than the specified duration
+ *
+ * @public
+ * @param {LocalFileAgeDuration} duration
+ */
+LocalFile.prototype.olderThan = methods.olderThan
+
+/**
+ * Returns true if the file is equal to or newer than the specified duration
+ *
+ * @public
+ * @param {LocalFileAgeDuration} duration
+ */
+LocalFile.prototype.newerThan = methods.newerThan

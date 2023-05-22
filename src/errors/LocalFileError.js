@@ -1,3 +1,5 @@
+import { ZodError } from 'zod'
+
 /**
  * @param {Error & NodeJS.ErrnoException} nativeError
  */
@@ -5,13 +7,17 @@ const isErrnoException = nativeError => typeof nativeError?.code === 'string'
 
 export class LocalFileError extends Error {
   /**
-   * @param {{ title?: string, description?: string, parent?: Error & NodeJS.ErrnoException }} params
+   * @param {{ title?: string, description?: string | ZodError, parent?: Error & NodeJS.ErrnoException }} params
    */
   constructor({ title, description, parent }) {
     super()
 
     if (title) {
       this.message = title + ' error'
+    }
+
+    if (description instanceof ZodError) {
+      description = description.errors[0].message
     }
 
     if (title && description) {

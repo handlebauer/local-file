@@ -1,19 +1,36 @@
 import { stat } from 'fs/promises'
+import * as validate from '../parameters/common.js'
 import { throwUnlessENOENT } from '../errors/throw-unless-enoent.js'
+import { LocalFileError } from '../errors/LocalFileError.js'
+
+/**
+ * @param {LocalFilePath} path
+ */
+const validateParams = path => {
+  const validatedPath = validate.filePath.safeParse(path)
+
+  if (validatedPath.success === false) {
+    throw new LocalFileError({
+      title: 'getStats[path parameter]',
+      description: validatedPath.error,
+    })
+  }
+
+  return { path: validatedPath.data }
+}
 
 /**
  * Returns file statistics if and only if the file exists
  *
  * @typedef {import("../LocalFile.types.js").LocalFileStats} LocalFileStats
+ * @typedef {import('../parameters/common.js').LocalFilePath} LocalFilePath
  *
  * @public
- * @param {string} path
+ * @param {LocalFilePath} path
  * @returns {Promise<LocalFileStats>}
  */
 export async function getStats(path) {
-  if (typeof path !== 'string') {
-    return null
-  }
+  ;({ path } = validateParams(path))
 
   const stats = await stat(path).catch(throwUnlessENOENT)
 

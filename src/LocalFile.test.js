@@ -31,7 +31,7 @@ const html = {
   decoder: (/** @type {string} */ html) => html,
 }
 
-/**
+/**l
  *
  * HANDLERS
  *
@@ -68,7 +68,6 @@ test('Should return valid instances with sensible defaults upon initialization',
   t.deepEqual(jsonFile.data, json.data)
   t.is(jsonFile.type, json.type)
   t.true(jsonFile.createdAt.date <= new Date())
-  t.true((await jsonFile.updatedAt).date < new Date())
 
   const htmlFile = new LocalFile(
     html.path,
@@ -83,24 +82,25 @@ test('Should return valid instances with sensible defaults upon initialization',
   await sleep(10)
 
   t.true(htmlFile.createdAt.date <= new Date())
-  t.true((await htmlFile.updatedAt).date <= new Date())
 })
 
-test('Should return a `LocalFileError` upon initialization if required parameters are not provided', async t => {
+test('Should return an error upon initialization if required parameters are not provided', async t => {
+  const instanceOf = LocalFileError
+
   await t.throwsAsync(
     async () =>
       new LocalFile(null, json.path, await LocalFile.getStats(json.path)),
-    { instanceOf: LocalFileError }
+    { instanceOf }
   )
 
   await t.throwsAsync(
     async () =>
       new LocalFile(json.path, null, await LocalFile.getStats(json.path)),
-    { instanceOf: LocalFileError }
+    { instanceOf }
   )
 
   t.throws(() => new LocalFile(json.path, json.path), {
-    instanceOf: LocalFileError,
+    instanceOf,
   })
 })
 
@@ -126,52 +126,16 @@ test('Should return valid duration since file creation when invoking `sinceCreat
 
 /**
  *
- * `olderThan` METHOD
- *
- */
-
-test('Should return false upon invoking `olderThan` if the file is newer than the provided duration', async t => {
-  const jsonFile = await LocalFile.read(json.path, json.decoder)
-
-  t.false(await jsonFile.olderThan([99, 'days']))
-})
-
-test('Should return true upon invoking `olderThan` if the file is older than the provided duration', async t => {
-  const jsonFile = await LocalFile.read(json.path, json.decoder)
-
-  t.true(await jsonFile.olderThan([0, 'milliseconds']))
-})
-
-/**
- *
- * `newerThan` METHOD
- *
- */
-
-test('Should return false upon invoking `newerThan` if the file is newer than the provided duration', async t => {
-  const jsonFile = await LocalFile.read(json.path, json.decoder)
-
-  t.false(await jsonFile.newerThan([0, 'days']))
-})
-
-test('Should return true upon invoking `newerThan` if the file is older than the provided duration', async t => {
-  const jsonFile = await LocalFile.read(json.path, json.decoder)
-
-  t.true(await jsonFile.newerThan([99, 'days']))
-})
-
-/**
- *
  * `expire` METHOD
  *
  */
 
-test('Should set the `expired` proeprty to false upon invoking the `expire` method', async t => {
+test('Should set the `isExpired` proeprty to false upon invoking the `expire` method', async t => {
   const jsonFile = await LocalFile.read(json.path, json.decoder)
 
   jsonFile.expire()
 
-  t.is(jsonFile.expired, true)
+  t.is(jsonFile.isExpired, true)
 })
 
 /**

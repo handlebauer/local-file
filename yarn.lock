@@ -244,13 +244,6 @@
   resolved "https://registry.yarnpkg.com/@eslint/js/-/js-8.41.0.tgz#080321c3b68253522f7646b55b577dd99d2950b3"
   integrity sha512-LxcyMGxwmTh2lY9FwHPGWOHmYFCZvbrFCBZL4FzSSsxsRPuhrYUg/49/0KDfW8tnIEaEHtfmn6+NPN+1DqaNmA==
 
-"@hbauer/convenience-functions@^0.33.0":
-  version "0.33.0"
-  resolved "https://registry.yarnpkg.com/@hbauer/convenience-functions/-/convenience-functions-0.33.0.tgz#8e03062ef232a612dacad89f3b590c5cab8dad7e"
-  integrity sha512-e/hbFHGCg+afQhQ+4BgQLbKFqIn+26Yg15f845eFeZ4C7xrPdShQnTtv00+dmNkKx+0iIbLu44uYp7X6UxTwPQ==
-  dependencies:
-    remeda "^1.14.0"
-
 "@hbauer/convenience-functions@^0.34.1":
   version "0.34.1"
   resolved "https://registry.yarnpkg.com/@hbauer/convenience-functions/-/convenience-functions-0.34.1.tgz#6146e8c127128dfca9f48a896ba9f75e611e41aa"
@@ -269,26 +262,10 @@
     eslint-import-resolver-alias "^1.1.2"
     eslint-plugin-import "^2.27.5"
 
-"@hbauer/local-file@^0.1.6":
-  version "0.1.6"
-  resolved "https://registry.yarnpkg.com/@hbauer/local-file/-/local-file-0.1.6.tgz#ed18d54a2d59ababcf1ad54af77d2a57996fa2fc"
-  integrity sha512-8TwEONV6BKidyBzjQgWuvpdUoSuhDWhl+44qh+lbFfU1uAfMtjFgibxymOgZ14Xd0/oTSzu1ZnrVKU8svHURAg==
-  dependencies:
-    "@hbauer/convenience-functions" "^0.33.0"
-    "@hbauer/time-since-file" "^0.2.0"
-
 "@hbauer/prettier-config@^1.1.0":
   version "1.1.0"
   resolved "https://registry.yarnpkg.com/@hbauer/prettier-config/-/prettier-config-1.1.0.tgz#c9a2aff583e4d88a89ecf8587361e82f8c1e268d"
   integrity sha512-bGpnP9vdX6gXFhNm3QS9fYDfmFKGRWDsAkfbquMTsSCd0zpVbMw5gGxAXfRksB8WI4p7a3pYscLz8MHIUt0n6g==
-
-"@hbauer/time-since-file@^0.2.0":
-  version "0.2.0"
-  resolved "https://registry.yarnpkg.com/@hbauer/time-since-file/-/time-since-file-0.2.0.tgz#2c36225ada417a42c370a22f715d26737b77f8fd"
-  integrity sha512-J8JRmV/jWG9KNLImt/ih3NUW5iNyHbLtq9r3fyAhlAoYpKoy1Qf3HMPpZvToEWjevgNMcATAIADzOd+a/Fj+kg==
-  dependencies:
-    dayjs "^1.11.7"
-    remeda "^1.14.0"
 
 "@humanwhocodes/config-array@^0.11.8":
   version "0.11.8"
@@ -814,11 +791,6 @@ date-time@^3.1.0:
   integrity sha512-uqCUKXE5q1PNBXjPqvwhwJf9SwMoAHBgWJ6DcrnS5o+W2JOiIILl0JEdVD8SGujrNS02GGxgwAg2PN2zONgtjg==
   dependencies:
     time-zone "^1.0.0"
-
-dayjs@^1.11.7:
-  version "1.11.7"
-  resolved "https://registry.yarnpkg.com/dayjs/-/dayjs-1.11.7.tgz#4b296922642f70999544d1144a2c25730fce63e2"
-  integrity sha512-+Yw9U6YO5TQohxLcIkrXBeY73WP3ejHWVvx8XCk3gxvQDCTEmS48ZrSZCKciI7Bhl/uCMyxYtE9UqRILmFphkQ==
 
 debug@^3.2.7:
   version "3.2.7"

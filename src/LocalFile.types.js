@@ -1,11 +1,4 @@
 /**
- * @typedef {'millisecond' | 'second' | 'minute' | 'hour' | 'day' | 'week' | 'month' | 'year'} LocalFileTimeUnitSingular
- * @typedef {'milliseconds' | 'seconds' | 'minutes' | 'hours' | 'days' | 'weeks' | 'months' | 'years'} LocalFileTimeUnitPlural
- * @typedef {LocalFileTimeUnitSingular | LocalFileTimeUnitPlural} LocalFileTimeUnit
- *
- * @typedef {[1, LocalFileTimeUnitSingular]} LocalFileTimeArraySingular
- * @typedef {[Exclude<number, 1>, LocalFileTimeUnitPlural]} LocalFileTimeArrayPlural
- * @typedef {LocalFileTimeArraySingular | LocalFileTimeArrayPlural} LocalFileTimeArray
  *
  * @typedef {{
  * date: Date
@@ -18,7 +11,7 @@
  * updatedAt: LocalFileStatTime
  * }} LocalFileStats
  *
- * @typedef { string | Record<string, any> | Record<string, any>[]} LocalFileAccept
+ * @typedef {Record<string, any>} LocalFileJSObject
  */
 
 export {}

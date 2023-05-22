@@ -68,8 +68,6 @@
   },
   "dependencies": {
     "@hbauer/convenience-functions": "^0.34.1",
-    "@hbauer/local-file": "^0.1.6",
-    "@hbauer/time-since-file": "^0.2.0",
     "remeda": "^1.14.0",
     "zod": "^3.21.4"
   }
