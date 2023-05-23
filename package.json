@@ -13,6 +13,11 @@
       "import": "./lib/utils/index.mjs",
       "require": "./lib/utils/index.cjs"
     },
+    "./parameters.js": {
+      "types": "./lib/parameters/index.d.ts",
+      "import": "./lib/parameters/index.mjs",
+      "require": "./lib/parameters/index.cjs"
+    },
     "./errors.js": {
       "types": "./lib/errors/index.d.ts",
       "import": "./lib/errors/index.mjs",
