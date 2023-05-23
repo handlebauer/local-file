@@ -29,8 +29,8 @@ export default [
     input: parameters,
     external,
     output: [
-      { file: pkg.exports['./parameters'].require, format: 'cjs' },
-      { file: pkg.exports['./parameters'].import, format: 'esm' },
+      { file: pkg.exports['./parameters.js'].require, format: 'cjs' },
+      { file: pkg.exports['./parameters.js'].import, format: 'esm' },
     ],
   },
   {
