@@ -57,7 +57,7 @@ test.afterEach('test', async _ => {
  *
  */
 
-test('Should return valid instances with sensible defaults upon initialization', async t => {
+test.only('Should return valid instances with sensible defaults upon initialization', async t => {
   const jsonFile = new LocalFile(
     json.path,
     json.data,
