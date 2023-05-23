@@ -1,5 +1,6 @@
 import { LocalFile } from '../LocalFile.js'
 import { LocalFileError } from '../errors/LocalFileError.js'
+import { formatFileAgeDurationError } from '../errors/format/file-age-duration-error.js'
 import { fileAgeDuration } from '../parameters/file-age.js'
 
 /**
@@ -15,7 +16,8 @@ const validateParams = duration => {
   if (validated.success === false) {
     throw new LocalFileError({
       title: 'olderThan[duration parameter]',
-      parent: validated.error,
+      description: validated.error,
+      formatDescription: formatFileAgeDurationError,
     })
   }
 

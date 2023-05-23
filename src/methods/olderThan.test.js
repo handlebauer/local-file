@@ -1,8 +1,8 @@
 import _test from 'ava'
-import { LocalFile } from '../LocalFile.js'
-import { LocalFileError } from '../errors/LocalFileError.js'
 import { mkdir, rm, writeFile } from 'fs/promises'
 import { sleep } from '@hbauer/convenience-functions'
+import { LocalFile } from '../LocalFile.js'
+import { LocalFileError } from '../errors/LocalFileError.js'
 
 const test = _test.serial // run all tests serially, as creating/removing files is hard to reason about otherwise
 
@@ -42,7 +42,7 @@ test.afterEach('test', async _ => {
   await sleep(10)
 })
 
-test('Should throw an error upon invoking `newThan`/`olderThan` if the duration provided is invalid', async t => {
+test.only('Should throw an error if the duration provided is invalid', async t => {
   const jsonFile = await LocalFile.read(json.path, json.decoder)
 
   const instanceOf = LocalFileError
@@ -57,13 +57,13 @@ test('Should throw an error upon invoking `newThan`/`olderThan` if the duration 
   await t.throwsAsync(() => jsonFile.olderThan([1, 'days']), { instanceOf })
 })
 
-test('Should return false upon invoking `olderThan` if the file is newer than the provided duration', async t => {
+test('Should return false if the file is newer than the provided duration', async t => {
   const jsonFile = await LocalFile.read(json.path, json.decoder)
 
   t.false(await jsonFile.olderThan([99, 'days']))
 })
 
-test('Should return true upon invoking `olderThan` if the file is older than the provided duration', async t => {
+test('Should return true if the file is older than the provided duration', async t => {
   const jsonFile = await LocalFile.read(json.path, json.decoder)
 
   t.true(await jsonFile.olderThan([0, 'milliseconds']))

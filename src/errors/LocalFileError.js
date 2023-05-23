@@ -1,3 +1,4 @@
+import { isNil } from 'remeda'
 import { ZodError } from 'zod'
 
 /**
@@ -5,19 +6,30 @@ import { ZodError } from 'zod'
  */
 const isErrnoException = nativeError => typeof nativeError?.code === 'string'
 
+/**
+ * @param {ZodError} error
+ */
+const formatZodError = error => error.flatten().formErrors.join('\n')
+
 export class LocalFileError extends Error {
   /**
-   * @param {{ title?: string, description?: string | ZodError, parent?: Error & NodeJS.ErrnoException }} params
+   * @param {{ title?: string, description?: string | ZodError, formatDescription?: (description: any) => string, parent?: Error & NodeJS.ErrnoException }} params
    */
-  constructor({ title, description, parent }) {
+  constructor({ title, description, formatDescription, parent }) {
     super()
 
     if (title) {
       this.message = title + ' error'
     }
 
+    if (isNil(formatDescription) === false) {
+      description = formatDescription(description)
+    }
+
     if (description instanceof ZodError) {
-      description = description.errors[0].message
+      if (isNil(formatDescription) === true) {
+        description = formatZodError(description)
+      }
     }
 
     if (title && description) {
