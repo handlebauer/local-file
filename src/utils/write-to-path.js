@@ -19,9 +19,8 @@ export const writeToPath = async (path, data) => {
   const normalizedPath = removeSlashes(path)
 
   if (normalizedPath === null) {
-    throw new LocalFileError({
-      title: 'writeToPath',
-      description: `invalid path (${path})`,
+    throw new LocalFileError('writeToPath', {
+      message: `invalid path (${path})`,
     })
   }
 
@@ -34,9 +33,8 @@ export const writeToPath = async (path, data) => {
 
     await writeFile(normalizedPath, data)
   } catch (error) {
-    throw new LocalFileError({
-      title: 'writeToPath',
-      description: `Failed to write ${normalizedPath} to file`,
+    throw new LocalFileError('writeToPath', {
+      message: `Failed to write ${normalizedPath} to file`,
       parent: error,
     })
   }
