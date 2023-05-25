@@ -5,19 +5,34 @@ import * as methods from './methods/index.js'
 import * as utils from './utils/index.js'
 
 /**
+ * @typedef {import('./LocalFile.types.js').JSONObject} JSONObject
+ * @typedef {import('./LocalFile.types.js').JSONArray} JSONArray
+ * @typedef {import('./LocalFile.types.js').JSONData} JSONData
+ * @typedef {import('./LocalFile.types.js').HTMLData} HTMLData
+ *
+ * @typedef {import('./LocalFile.types.js').LocalFileData} LocalFileData
+ * @typedef {import('./LocalFile.types.js').LocalFileDataAll} LocalFileDataAll
+ *
  * @typedef {import('./parameters/common.js').LocalFilePath} LocalFilePath
- * @typedef {import('./parameters/common.js').LocalFileAccepts} LocalFileAccepts
  * @typedef {import('./parameters/file-age.js').FileAgeDurationUnit} FileAgeDurationUnit
  * @typedef {import('./parameters/file-age.js').LocalFileAgeDuration} LocalFileAgeDuration
  * @typedef {import("./LocalFile.types.js").LocalFileStats} LocalFileStats
  */
 
+/**
+ * @template Data
+ * @typedef {Data extends JSONData ? Data extends JSONArray ? JSONArray : JSONObject : Data extends HTMLData ? HTMLData : any} LocalFileDataType
+ */
+
+/**
+ * @template {LocalFileData} Data
+ */
 export class LocalFile {
   /**
    * @typedef {ConstructorParameters<typeof LocalFile>} LocalFileConstructorParams
    *
    * @private
-   * @param {{ path: LocalFilePath, data: LocalFileAccepts, stats: LocalFileStats }} args
+   * @param {{ path: LocalFilePath, data: LocalFileData, stats: LocalFileStats }} args
    */
   static ensureConstructorParams(args) {
     /**
@@ -37,7 +52,7 @@ export class LocalFile {
 
   /**
    * @param {string} path
-   * @param {LocalFileAccepts} data
+   * @param {LocalFileData} data
    * @param {LocalFileStats} stats
    */
   constructor(path = null, data = null, stats = null) {
@@ -59,7 +74,7 @@ export class LocalFile {
      * @public
      * @readonly
      */
-    this.data = data
+    this.data = /** @type {LocalFileDataType<Data>} */ (data)
 
     /**
      * @public
@@ -75,7 +90,7 @@ export class LocalFile {
      * may have changed since; for instance, if the file was deleted and
      * re-created since this LocalFile was instantiated, the createdAt
      * value may be stale. It is safer to use the getStats() method as
-     * it better reflects the file's actual state on the file-system.
+     * it better reflects the file's current state on the file-system.
      *
      * @public
      * @readonly
@@ -87,11 +102,11 @@ export class LocalFile {
      *
      * Note: this value is only guaranteed to valid for the file when it
      * was instantiated as a LocalFile. The LocalFile instance may or
-     * may not reflect the actual date of the file's size as this may
-     * have changed since; for instance, if the file was updated since
-     * this LocalFile was instantiated, the createdAt value may be
-     * stale. It is safer to use the getStats() method as it better
-     * reflects the file's actual state on the file-system.
+     * may not reflect the actual size of the file size as this may have
+     * changed since; for instance, if the file was updated since the
+     * LocalFile was instantiated, the size value may be stale. It is
+     * safer to use the getStats() method as it better reflects the
+     * file's actual state on the file-system at the time of invocation.
      *
      * @public
      * @readonly
@@ -168,15 +183,15 @@ export class LocalFile {
 /**
  * @public
  * @param {LocalFilePath} path
- * @param {LocalFileAccepts} data
- * @param {(data: LocalFileAccepts) => string} encode
+ * @param {LocalFileData} data
+ * @param {(data: LocalFileData) => string} encode
  */
 LocalFile.save = methods.save
 
 /**
  * @public
  * @param {LocalFilePath} path
- * @param {(rawData: string) => LocalFileAccepts} decode
+ * @param {(rawData: string) => LocalFileData} decode
  * @param {LocalFileStats} [stats]
  */
 LocalFile.read = methods.read

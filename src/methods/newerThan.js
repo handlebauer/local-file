@@ -26,7 +26,7 @@ const validateParams = duration => {
  * Returns true if the file is equal to or newer than the specified duration
  *
  * @public
- * @this {LocalFile}
+ * @this {LocalFile<any>}
  * @param {LocalFileAgeDuration} duration
  */
 export async function newerThan(duration) {

@@ -5,56 +5,26 @@ import { LocalFileError } from '../errors/LocalFileError.js'
 import { throwUnlessENOENT } from '../errors/throw-unless-enoent.js'
 
 /**
- * @param {string} path
- * @param {LocalFileAccepts} data
- * @param {(data: LocalFileAccepts) => string} encode
+ * @typedef {import('./static.getStats.js').LocalFilePath} LocalFilePath
+ * @typedef {import('../LocalFile.types.js').LocalFileData} LocalFileData
  */
-const validateParams = (path, data, encode) => {
-  const validatedPath = validate.filePath.safeParse(path)
-  const validatedData = validate.fileAccepts.safeParse(data)
-  const validatedEncode = validate.encodeFunction.safeParse(encode)
-
-  if (validatedPath.success === false) {
-    throw new LocalFileError({
-      title: 'save[path parameter]',
-      description: validatedPath.error.message,
-    })
-  }
-
-  if (validatedData.success === false) {
-    throw new LocalFileError({
-      title: 'save[data parameter]',
-      description: validatedData.error.message,
-    })
-  }
-
-  if (validatedEncode.success === false) {
-    throw new LocalFileError({
-      title: 'save[encode parameter]',
-      description: validatedEncode.error.message,
-    })
-  }
-
-  return {
-    path: validatedPath.data,
-    data: validatedData.data,
-    encode: validatedEncode.data,
-  }
-}
 
 /**
+ * @template {LocalFileData} D
+ *
  * @public
  *
- * @typedef {import('../parameters/common.js').LocalFileAccepts} LocalFileAccepts
  *
- * @param {string} path
- * @param {LocalFileAccepts} data
- * @param {(data: LocalFileAccepts) => string} [encode]
+ * @param {LocalFilePath} path
+ * @param {D} data
+ * @param {(data: LocalFileData) => string} [encode]
  * @param {{ returnExisting?: boolean }} [options]
- * @returns {Promise<LocalFile>}
+ * @returns {Promise<LocalFile<D>>}
  */
 export async function save(path, data, encode, options = {}) {
-  ;({ path, data, encode } = validateParams(path, data, encode))
+  path = validate.filePath.parse(path)
+  data = validate.JSONData.parse(data)
+  encode = validate.encodeFunction.parse(encode)
 
   let stats = await LocalFile.getStats(path).catch(throwUnlessENOENT)
 

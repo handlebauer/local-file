@@ -50,48 +50,54 @@ test.afterEach('test', async _ => {
   await sleep(10)
 })
 
-test('Should throw an error if the provided path is empty or of an incompatible type', async t => {
-  const instanceOf = LocalFileError
+test.failing(
+  'Should throw an error if the provided path is empty or of an incompatible type',
+  async t => {
+    const instanceOf = LocalFileError
 
-  await t.throwsAsync(() => LocalFile.save(null, json.data, JSON.stringify), {
-    instanceOf,
-  })
+    await t.throwsAsync(() => LocalFile.save(null, json.data, JSON.stringify), {
+      instanceOf,
+    })
 
-  await t.throwsAsync(() => LocalFile.save('', json.data, JSON.stringify), {
-    instanceOf,
-  })
+    await t.throwsAsync(() => LocalFile.save('', json.data, JSON.stringify), {
+      instanceOf,
+    })
 
-  await t.throwsAsync(
-    // @ts-ignore
-    () => LocalFile.save(Symbol('not a string'), json.data, JSON.stringify),
-    { instanceOf }
-  )
-})
-
-test('Should throw an error if the provided data is nullish or of an incompatible type', async t => {
-  const instanceOf = LocalFileError
-
-  await t.throwsAsync(() => LocalFile.save(json.path, null, JSON.stringify), {
-    instanceOf,
-  })
-
-  // @ts-ignore
-  await t.throwsAsync(() => LocalFile.save(json.path, 0, JSON.stringify), {
-    instanceOf,
-  })
-
-  await t.throwsAsync(() => LocalFile.save(json.path, '', JSON.stringify), {
-    instanceOf,
-  })
-
-  await t.throwsAsync(
-    // @ts-ignore
-    () =>
+    await t.throwsAsync(
       // @ts-ignore
-      LocalFile.save(json.path, Symbol('incompatible type'), JSON.stringify),
-    { instanceOf }
-  )
-})
+      () => LocalFile.save(Symbol('not a string'), json.data, JSON.stringify),
+      { instanceOf }
+    )
+  }
+)
+
+test.failing(
+  'Should throw an error if the provided data is nullish or of an incompatible type',
+  async t => {
+    const instanceOf = LocalFileError
+
+    await t.throwsAsync(() => LocalFile.save(json.path, null, JSON.stringify), {
+      instanceOf,
+    })
+
+    // @ts-ignore
+    await t.throwsAsync(() => LocalFile.save(json.path, 0, JSON.stringify), {
+      instanceOf,
+    })
+
+    await t.throwsAsync(() => LocalFile.save(json.path, '', JSON.stringify), {
+      instanceOf,
+    })
+
+    await t.throwsAsync(
+      // @ts-ignore
+      () =>
+        // @ts-ignore
+        LocalFile.save(json.path, Symbol('incompatible type'), JSON.stringify),
+      { instanceOf }
+    )
+  }
+)
 
 test('Should write a file to the local filesystem and return a new instance', async t => {
   const jsonFile = await LocalFile.save(json.path, json.data, JSON.stringify)

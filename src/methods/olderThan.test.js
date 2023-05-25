@@ -42,7 +42,7 @@ test.afterEach('test', async _ => {
   await sleep(10)
 })
 
-test.only('Should throw an error if the duration provided is invalid', async t => {
+test('Should throw an error if the duration provided is invalid', async t => {
   const jsonFile = await LocalFile.read(json.path, json.decoder)
 
   const instanceOf = LocalFileError

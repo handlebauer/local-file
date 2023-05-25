@@ -5,10 +5,10 @@ import { LocalFile } from '../LocalFile.js'
 import { LocalFileError } from '../errors/LocalFileError.js'
 
 /**
- * @typedef {import('../parameters/common.js').LocalFileAccepts} LocalFileAccepts
+ * @typedef {import('../LocalFile.types.js').LocalFileData} LocalFileData
  *
  * @param {string} path
- * @param {(rawData: string) => LocalFileAccepts} decode
+ * @param {(rawData: string) => LocalFileData} decode
  */
 const validateParams = (path, decode) => {
   const validatedPath = validate.filePath.safeParse(path)
@@ -32,16 +32,18 @@ const validateParams = (path, decode) => {
 }
 
 /**
- * @public
- *
  * @typedef {import('../parameters/common.js').LocalFilePath} LocalFilePath
  * @typedef {import('../parameters/common.js').LocalFileEDecodeFunction} LocalFileEDecodeFunction
  * @typedef {import("../LocalFile.types.js").LocalFileStats} LocalFileStats
+ */
+
+/**
+ * @public
  *
  * @param {LocalFilePath} path
  * @param {LocalFileEDecodeFunction} decode
  * @param {LocalFileStats} [stats]
- * @returns {Promise<LocalFile>}
+ * @returns {Promise<LocalFile<any>>}
  */
 export async function read(path, decode, stats) {
   ;({ path, decode } = validateParams(path, decode))
