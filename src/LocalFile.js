@@ -29,7 +29,7 @@ import * as utils from './utils/index.js'
  */
 export class LocalFile {
   /**
-   * @typedef {ConstructorParameters<typeof LocalFile>} LocalFileConstructorParams
+   * @typedef {ConstructorParameters<typeof LocalFile<any>>} LocalFileConstructorParams
    *
    * @private
    * @param {{ path: LocalFilePath, data: LocalFileData, stats: LocalFileStats }} args

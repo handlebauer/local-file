@@ -10,7 +10,7 @@ const M = d * (365 / 12)
 const y = d * 365
 
 /**
- * @param {LocalFile} file
+ * @param {LocalFile<any>} file
  */
 export const fileAge = async file => {
   if (file instanceof LocalFile === false) {
