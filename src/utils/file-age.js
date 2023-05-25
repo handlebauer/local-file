@@ -14,9 +14,8 @@ const y = d * 365
  */
 export const fileAge = async file => {
   if (file instanceof LocalFile === false) {
-    throw new LocalFileError({
-      title: 'fileAge',
-      description: 'parameter must be an instance of `LocalFile`',
+    throw new LocalFileError('fileAge', {
+      message: 'parameter must be an instance of `LocalFile`',
     })
   }
 

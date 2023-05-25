@@ -15,16 +15,14 @@ const validateParams = (path, decode) => {
   const validatedDecode = validate.decodeFunction.safeParse(decode)
 
   if (validatedPath.success === false) {
-    throw new LocalFileError({
-      title: 'save[path parameter]',
-      description: validatedPath.error.message,
+    throw new LocalFileError('save[path parameter]', {
+      message: validatedPath.error.message,
     })
   }
 
   if (validatedDecode.success === false) {
-    throw new LocalFileError({
-      title: 'save[decode parameter]',
-      description: validatedDecode.error.message,
+    throw new LocalFileError('save[decode parameter]', {
+      message: validatedDecode.error.message,
     })
   }
 
@@ -55,9 +53,8 @@ export async function read(path, decode, stats) {
   try {
     data = await readFile(path, 'utf-8').then(decode)
   } catch (error) {
-    throw new LocalFileError({
-      title: 'read',
-      description: `failed while reading/decoding file (${path})`,
+    throw new LocalFileError('read', {
+      message: `failed while reading/decoding file (${path})`,
       parent: error,
     })
   }

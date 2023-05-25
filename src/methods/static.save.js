@@ -7,23 +7,23 @@ import { throwUnlessENOENT } from '../errors/throw-unless-enoent.js'
 /**
  * @typedef {import('./static.getStats.js').LocalFilePath} LocalFilePath
  * @typedef {import('../LocalFile.types.js').LocalFileData} LocalFileData
+ * @typedef {import('../LocalFile.types.js').LocalFileAccepts} LocalFileAccepts
  */
 
 /**
- * @template {LocalFileData} D
- *
  * @public
  *
+ * @template {LocalFileAccepts} D
  *
  * @param {LocalFilePath} path
  * @param {D} data
- * @param {(data: LocalFileData) => string} [encode]
+ * @param {(data: LocalFileAccepts) => string} [encode]
  * @param {{ returnExisting?: boolean }} [options]
  * @returns {Promise<LocalFile<D>>}
  */
 export async function save(path, data, encode, options = {}) {
   path = validate.filePath.parse(path)
-  data = validate.JSONData.parse(data)
+  data = validate.accepts.parse(data)
   encode = validate.encodeFunction.parse(encode)
 
   let stats = await LocalFile.getStats(path).catch(throwUnlessENOENT)
@@ -38,9 +38,8 @@ export async function save(path, data, encode, options = {}) {
     try {
       await writeToPath(path, encode(data))
     } catch (error) {
-      throw new LocalFileError({
-        title: 'save',
-        description: `failed while serializing/writing data`,
+      throw new LocalFileError('save', {
+        message: `failed while serializing/writing data`,
         parent: error,
       })
     }

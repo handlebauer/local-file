@@ -11,7 +11,7 @@ import * as utils from './utils/index.js'
  * @typedef {import('./LocalFile.types.js').HTMLData} HTMLData
  *
  * @typedef {import('./LocalFile.types.js').LocalFileData} LocalFileData
- * @typedef {import('./LocalFile.types.js').LocalFileDataAll} LocalFileDataAll
+ * @typedef {import('./LocalFile.types.js').LocalFileAccepts} LocalFileAccepts
  *
  * @typedef {import('./parameters/common.js').LocalFilePath} LocalFilePath
  * @typedef {import('./parameters/file-age.js').FileAgeDurationUnit} FileAgeDurationUnit
@@ -25,14 +25,14 @@ import * as utils from './utils/index.js'
  */
 
 /**
- * @template {LocalFileData} Data
+ * @template {LocalFileAccepts} Data
  */
 export class LocalFile {
   /**
    * @typedef {ConstructorParameters<typeof LocalFile<any>>} LocalFileConstructorParams
    *
    * @private
-   * @param {{ path: LocalFilePath, data: LocalFileData, stats: LocalFileStats }} args
+   * @param {{ path: LocalFilePath, data: LocalFileAccepts, stats: LocalFileStats }} args
    */
   static ensureConstructorParams(args) {
     /**
@@ -40,9 +40,8 @@ export class LocalFile {
      */
     const throwIfNil = ([name, arg]) => {
       if (isTruthy(arg) === false) {
-        throw new LocalFileError({
-          title: 'constructor parameters',
-          description: `${name} must be defined (found: ${arg})`,
+        throw new LocalFileError('constructor parameters', {
+          message: `${name} must be defined (found: ${arg})`,
         })
       }
     }
@@ -52,7 +51,7 @@ export class LocalFile {
 
   /**
    * @param {string} path
-   * @param {LocalFileData} data
+   * @param {LocalFileAccepts} data
    * @param {LocalFileStats} stats
    */
   constructor(path = null, data = null, stats = null) {
@@ -166,9 +165,8 @@ export class LocalFile {
 
   toJSON() {
     if (this.type === 'string') {
-      throw new LocalFileError({
-        title: 'toJSON',
-        description: `file's data is of type ${this.type}, which is incompatible with JSON.stringify`,
+      throw new LocalFileError('toJSON', {
+        message: `file's data is of type ${this.type}, which is incompatible with JSON.stringify`,
       })
     }
 
@@ -182,9 +180,14 @@ export class LocalFile {
 
 /**
  * @public
+ *
+ * @template {LocalFileAccepts} D
+ *
  * @param {LocalFilePath} path
- * @param {LocalFileData} data
- * @param {(data: LocalFileData) => string} encode
+ * @param {D} data
+ * @param {(data: LocalFileAccepts) => string} [encode]
+ * @param {{ returnExisting?: boolean }} [options]
+ * @returns {Promise<LocalFile<D>>}
  */
 LocalFile.save = methods.save
 

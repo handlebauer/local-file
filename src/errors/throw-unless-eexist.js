@@ -7,8 +7,8 @@ export const throwUnlessEEXIST = error =>
   error.code === 'EEXIST'
     ? null
     : Promise.reject(
-        new LocalFileError({
-          description: 'failed during write',
+        new LocalFileError('throwUnlessEEXIST', {
+          message: 'failed during write',
           parent: error,
         })
       )

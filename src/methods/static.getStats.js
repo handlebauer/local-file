@@ -9,9 +9,8 @@ const validateParams = path => {
   const validatedPath = validate.filePath.safeParse(path)
 
   if (validatedPath.success === false) {
-    throw new LocalFileError({
-      title: 'getStats[path parameter]',
-      description: validatedPath.error,
+    throw new LocalFileError('getStats[path parameter]', {
+      parent: validatedPath.error,
     })
   }
 
@@ -36,9 +35,8 @@ export async function getStats(path) {
   try {
     stats = await stat(path)
   } catch (error) {
-    throw new LocalFileError({
-      title: 'getStats',
-      description: `path to file (${path}) does not exist`,
+    throw new LocalFileError('getStats', {
+      message: `path to file (${path}) does not exist`,
       parent: error,
     })
   }

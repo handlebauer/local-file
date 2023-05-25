@@ -17,14 +17,16 @@ export const JSONData = z.lazy(() =>
   z.union([JSONValue, z.array(JSONData), z.record(JSONData)])
 )
 
+export const accepts = z.any()
+
 /** @typedef {z.infer<typeof encodeFunction>} LocalFileEncodeFunction */
 export const encodeFunction = z
   .function()
-  .args(JSONData)
+  .args(accepts)
   .returns(z.string().nonempty())
 
 /** @typedef {z.infer<typeof decodeFunction>} LocalFileEDecodeFunction */
 export const decodeFunction = z
   .function()
   .args(z.string().nonempty())
-  .returns(JSONData)
+  .returns(accepts)

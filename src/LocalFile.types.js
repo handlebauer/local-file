@@ -10,6 +10,8 @@
  * @typedef {JSONData | HTMLData} LocalFileData
  * @typedef {JSONData & HTMLData} LocalFileDataAll
  *
+ * @typedef {string | Record<string, any>} LocalFileAccepts
+ *
  * @typedef {{
  * date: Date
  * milliseconds: number

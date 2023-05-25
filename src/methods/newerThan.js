@@ -13,8 +13,7 @@ const validateParams = duration => {
   const validated = fileAgeDuration.safeParse(duration)
 
   if (validated.success === false) {
-    throw new LocalFileError({
-      title: 'olderThan[duration parameter]',
+    throw new LocalFileError('olderThan[duration]', {
       parent: validated.error,
     })
   }

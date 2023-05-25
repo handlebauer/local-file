@@ -1,52 +1,56 @@
-import { isNil } from 'remeda'
 import { ZodError } from 'zod'
+import { formatZodError } from './format/format-zod-error.js'
 
 /**
- * @param {Error & NodeJS.ErrnoException} nativeError
+ * @typedef {(Error & NodeJS.ErrnoException | ZodError) & { status?: number, code?: string }} ScrapeParentError
  */
-const isErrnoException = nativeError => typeof nativeError?.code === 'string'
-
-/**
- * @param {ZodError} error
- */
-const formatZodError = error => error.flatten().formErrors.join('\n')
 
 export class LocalFileError extends Error {
   /**
-   * @param {{ title?: string, description?: string | ZodError, formatDescription?: (description: any) => string, parent?: Error & NodeJS.ErrnoException }} params
+   * @typedef {{
+   * message?: string
+   * parent?: ScrapeParentError
+   * formatParent?: (error: Error & NodeJS.ErrnoException) => string
+   * status?: number
+   * code?: string
+   * }} ScrapeErrorParams
    */
-  constructor({ title, description, formatDescription, parent }) {
+
+  /**
+   * @param {string} title
+   * @param {ScrapeErrorParams} params
+   */
+  constructor(title, { message, parent, formatParent, status, code } = {}) {
     super()
 
     if (title) {
-      this.message = title + ' error'
+      this.message = title
     }
 
-    if (isNil(formatDescription) === false) {
-      description = formatDescription(description)
-    }
-
-    if (description instanceof ZodError) {
-      if (isNil(formatDescription) === true) {
-        description = formatZodError(description)
+    if (message) {
+      if (title) {
+        this.message += ':' + ' ' + message
+      } else {
+        this.message = message
       }
     }
 
-    if (title && description) {
-      this.message += ': ' + description
-    }
-
-    if (description && !title) {
-      this.message += description
-    }
-
     if (parent) {
-      this.message += '\n' + '[' + parent.message + ']'
+      if (parent instanceof ZodError) {
+        this.message += formatZodError(parent)
+      } else if (formatParent) {
+        this.message += ' ' + '[' + formatParent(parent) + ']'
+      } else {
+        this.message += ' ' + '[' + parent.message + ']'
+      }
     }
 
-    if (isErrnoException(parent) === true) {
-      this.code = parent.code
-      this.isErrnoException = true
+    if (status || parent?.status) {
+      this.status = status || parent.status
+    }
+
+    if (code || parent?.code) {
+      this.code = code || parent?.code
     }
   }
 }

@@ -71,33 +71,30 @@ test.failing(
   }
 )
 
-test.failing(
-  'Should throw an error if the provided data is nullish or of an incompatible type',
-  async t => {
-    const instanceOf = LocalFileError
+test('Should throw an error if the provided data is nullish or of an incompatible type', async t => {
+  const instanceOf = LocalFileError
 
-    await t.throwsAsync(() => LocalFile.save(json.path, null, JSON.stringify), {
-      instanceOf,
-    })
+  await t.throwsAsync(() => LocalFile.save(json.path, null, JSON.stringify), {
+    instanceOf,
+  })
 
+  // @ts-ignore
+  await t.throwsAsync(() => LocalFile.save(json.path, 0, JSON.stringify), {
+    instanceOf,
+  })
+
+  await t.throwsAsync(() => LocalFile.save(json.path, '', JSON.stringify), {
+    instanceOf,
+  })
+
+  await t.throwsAsync(
     // @ts-ignore
-    await t.throwsAsync(() => LocalFile.save(json.path, 0, JSON.stringify), {
-      instanceOf,
-    })
-
-    await t.throwsAsync(() => LocalFile.save(json.path, '', JSON.stringify), {
-      instanceOf,
-    })
-
-    await t.throwsAsync(
+    () =>
       // @ts-ignore
-      () =>
-        // @ts-ignore
-        LocalFile.save(json.path, Symbol('incompatible type'), JSON.stringify),
-      { instanceOf }
-    )
-  }
-)
+      LocalFile.save(json.path, Symbol('incompatible type'), JSON.stringify),
+    { instanceOf }
+  )
+})
 
 test('Should write a file to the local filesystem and return a new instance', async t => {
   const jsonFile = await LocalFile.save(json.path, json.data, JSON.stringify)
@@ -175,5 +172,11 @@ test('Should throw an error if provided encoder fails while encoding', async t =
       // @ts-ignore
       LocalFile.save(randomString(10), { purposeful: 'error' }, JSON.parse),
     { instanceOf }
+  )
+})
+
+test('Should accept any kind of data', async t => {
+  await t.notThrowsAsync(() =>
+    LocalFile.save(randomString(10), { _: new Date() }, JSON.stringify)
   )
 })
