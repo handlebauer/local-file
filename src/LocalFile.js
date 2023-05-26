@@ -78,6 +78,11 @@ export class LocalFile {
     /**
      * @public
      */
+    this.isCached = false
+
+    /**
+     * @public
+     */
     this.isExpired = false
 
     /**
@@ -151,6 +156,16 @@ export class LocalFile {
   async sinceCreated(unit = 'milliseconds') {
     const since = await utils.fileAge(this)
     return since.created[plural(unit)]
+  }
+
+  /**
+   * Mark file as cached
+   *
+   * @public
+   */
+  cached() {
+    this.isCached = true
+    return this
   }
 
   /**

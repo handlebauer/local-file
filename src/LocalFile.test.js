@@ -127,6 +127,20 @@ test('Should return valid duration since file creation when invoking `sinceCreat
 
 /**
  *
+ * `cached` METHOD
+ *
+ */
+
+test('Should set the `isCached` proeprty to false upon invoking the `cached` method', async t => {
+  const jsonFile = await LocalFile.read(json.path, json.decoder)
+
+  jsonFile.cached()
+
+  t.is(jsonFile.isCached, true)
+})
+
+/**
+ *
  * `expire` METHOD
  *
  */
