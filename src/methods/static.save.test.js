@@ -1,7 +1,6 @@
 import _test from 'ava'
 import { mkdir, readFile, rm, stat, writeFile } from 'fs/promises'
 import { sleep } from '@hbauer/convenience-functions'
-import { randomString } from 'remeda'
 import { LocalFile } from '../LocalFile.js'
 import { LocalFileError } from '../errors/LocalFileError.js'
 
