@@ -170,13 +170,13 @@ test('Should throw an error if provided encoder fails while encoding', async t =
   await t.throwsAsync(
     () =>
       // @ts-ignore
-      LocalFile.save(randomString(10), { purposeful: 'error' }, JSON.parse),
+      LocalFile.save(html.path, { purposeful: 'error' }, JSON.parse),
     { instanceOf }
   )
 })
 
 test('Should accept any kind of data', async t => {
   await t.notThrowsAsync(() =>
-    LocalFile.save(randomString(10), { _: new Date() }, JSON.stringify)
+    LocalFile.save(html.path, { _: new Date() }, JSON.stringify)
   )
 })
