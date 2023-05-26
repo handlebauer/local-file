@@ -77,13 +77,9 @@ export class LocalFile {
 
     /**
      * @public
+     * @type {{ [attr: string]: any }}
      */
-    this.isCached = false
-
-    /**
-     * @public
-     */
-    this.isExpired = false
+    this.attributes = {}
 
     /**
      * When the file was created
@@ -156,26 +152,6 @@ export class LocalFile {
   async sinceCreated(unit = 'milliseconds') {
     const since = await utils.fileAge(this)
     return since.created[plural(unit)]
-  }
-
-  /**
-   * Mark file as cached
-   *
-   * @public
-   */
-  cached() {
-    this.isCached = true
-    return this
-  }
-
-  /**
-   * Mark file as expired
-   *
-   * @public
-   */
-  expire() {
-    this.isExpired = true
-    return this
   }
 
   toJSON() {

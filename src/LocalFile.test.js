@@ -127,30 +127,18 @@ test('Should return valid duration since file creation when invoking `sinceCreat
 
 /**
  *
- * `cached` METHOD
+ * `setAttribute` METHOD
  *
  */
 
-test('Should set the `isCached` proeprty to false upon invoking the `cached` method', async t => {
-  const jsonFile = await LocalFile.read(json.path, json.decoder)
+test('Should allow arbitrary attributes to be set under the `attributes` property', async t => {
+  let jsonFile = await LocalFile.read(json.path, json.decoder)
 
-  jsonFile.cached()
+  jsonFile.attributes.cached = true
+  jsonFile.attributes.expired = true
 
-  t.is(jsonFile.isCached, true)
-})
-
-/**
- *
- * `expire` METHOD
- *
- */
-
-test('Should set the `isExpired` proeprty to false upon invoking the `expire` method', async t => {
-  const jsonFile = await LocalFile.read(json.path, json.decoder)
-
-  jsonFile.expire()
-
-  t.is(jsonFile.isExpired, true)
+  t.is(jsonFile.attributes.cached, true)
+  t.is(jsonFile.attributes.expired, false)
 })
 
 /**
