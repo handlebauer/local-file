@@ -3,6 +3,7 @@
  */
 export { save } from './static.save.js'
 export { read } from './static.read.js'
+export { rm } from './static.rm.js'
 export { getStats } from './static.getStats.js'
 
 /**

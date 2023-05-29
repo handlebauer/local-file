@@ -124,6 +124,15 @@ export class LocalFile {
   }
 
   /**
+   * @public
+   *
+   * @returns {Promise<void>}
+   */
+  rm() {
+    return LocalFile.rm(this.path)
+  }
+
+  /**
    * Current file statistics, e.g. time last updated
    *
    * @public
@@ -189,6 +198,14 @@ LocalFile.save = methods.save
  * @param {LocalFileStats} [stats]
  */
 LocalFile.read = methods.read
+
+/**
+ * @public
+ *
+ * @param {LocalFilePath} path
+ * @returns {Promise<void>}
+ */
+LocalFile.rm = methods.rm
 
 /**
  * Returns file statistics if and only if the file exists

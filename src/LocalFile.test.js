@@ -1,5 +1,6 @@
 import _test from 'ava'
 import { mkdir, rm, writeFile } from 'fs/promises'
+import { readFile } from 'fs/promises'
 import { sleep } from '@hbauer/convenience-functions'
 import { LocalFile } from './LocalFile.js'
 import { LocalFileError } from './errors/LocalFileError.js'
@@ -57,7 +58,7 @@ test.afterEach('test', async _ => {
  *
  */
 
-test.only('Should return valid instances with sensible defaults upon initialization', async t => {
+test('Should return valid instances with sensible defaults upon initialization', async t => {
   const jsonFile = new LocalFile(
     json.path,
     json.data,
@@ -107,6 +108,26 @@ test('Should return an error upon initialization if required parameters are not 
 
 /**
  *
+ * `rm` METHOD
+ *
+ */
+
+test('Should remove an existing file from the local filesystem', async t => {
+  const file = await LocalFile.save(json.path, json.data, JSON.stringify) // write a new file
+
+  await t.notThrowsAsync(() => readFile(json.path, 'utf-8')) // read newly created file
+
+  await t.notThrowsAsync(() => file.rm()) // remove newly created file
+
+  await t.throwsAsync(() => readFile(json.path, 'utf-8'), {
+    code: 'ENOENT',
+  }) // read newly removed file
+
+  await t.throwsAsync(() => file.rm()) // remove newly removed file
+})
+
+/**
+ *
  * `sinceUpdatedd` METHOD
  *
  */
@@ -138,7 +159,7 @@ test('Should allow arbitrary attributes to be set under the `attributes` propert
   jsonFile.attributes.expired = true
 
   t.is(jsonFile.attributes.cached, true)
-  t.is(jsonFile.attributes.expired, false)
+  t.is(jsonFile.attributes.expired, true)
 })
 
 /**
