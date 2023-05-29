@@ -1,6 +1,6 @@
 {
   "name": "@hbauer/local-file",
-  "version": "0.4.12",
+  "version": "0.5.0",
   "type": "module",
   "exports": {
     ".": {
